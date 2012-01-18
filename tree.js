@@ -11,15 +11,8 @@ var MI = Backbone.Model.extend({
         this.set({"view": new MIView({ model: this }) });
     },
     change_status: function() {
-        var statuses = ["active_visible", "visible", "active", "review", "inactive"];
-        var status_index = _.indexOf(statuses, this.get("status"));
-        if( status_index >= statuses.length - 1 ) {
-            status_index = 0;
-        } else {
-            status_index++;
-        }
-
-        this.set({"status": statuses[status_index] });
+        var status = next_status( this.get("status") );
+        this.set({"status": status });
     }
 });
 
@@ -65,6 +58,27 @@ var Folder = Backbone.Model.extend({
         //stored and calculated seperately for easy calculation and upating on nested folders
         this.update_status();
         this.get("children").bind("change:status", this.update_status, this);
+
+        //if status of tree is updated, update all children as well
+        this.bind("change:status", function() {
+            //ignore the 'mixed' status, however - this is unique to the folder
+            if( this.get("status") == "mixed" ) {
+                return false;
+            }
+
+            //unbind the status change event for children that will update the status
+            //of the folder - this would cause a recursive issue
+            this.get("children").unbind("change:status", this.update_status);
+
+            //change each children's status to the folder's status
+            this.get("children").each(function(item) {
+                item.set({"status": this.get("status")});
+            }, this);
+
+            //rebind the child status change method
+            this.get("children").bind("change:status", this.update_status, this);
+
+        }, this);
     },
     update_status: function() {
         var statuses = this.get("children").pluck("status");
@@ -96,8 +110,13 @@ var FolderView = Backbone.View.extend({
         var is_hidden = this.model.get("hidden");
         this.model.set({ "hidden": !is_hidden });
     },
+    change_status: function(e) {
+        e.preventDefault();
+        var new_status = next_status( this.model.get("status") );
+        this.model.set({"status": new_status });
+    },
     render: function() {
-        var template = _.template("<div id='<%= cid %>'><b><%= title %></b> Status: <%= status %><a href='#'>Hide</a></div><ul></ul>");
+        var template = _.template("<div id='<%= cid %>'><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ul></ul>");
         var html = template({
             "cid": this.model.cid,
             "title": this.model.get("title"),
@@ -106,7 +125,8 @@ var FolderView = Backbone.View.extend({
         $(this.el).html(html);
 
         //bind hide event
-        $(this.el).find("#" + this.model.cid + " a").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).find("#" + this.model.cid + " a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).find("#" + this.model.cid + " a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
 
         //loop through and add children
         var ul_el = $(this.el).find("ul");
@@ -120,4 +140,20 @@ var FolderView = Backbone.View.extend({
         }
     }
 });
+
+
+
+//helper function for development mode; switches statuses
+function next_status(current_status) {
+    var statuses = ["active_visible", "visible", "active", "review", "inactive"];
+    var status_index = _.indexOf(statuses, current_status);
+    if( status_index == -1 ) {
+        status_index = 0;
+    } else if( status_index >= statuses.length - 1 ) {
+        status_index = 0;
+    } else {
+        status_index++;
+    }
+    return statuses[status_index];
+}
 
