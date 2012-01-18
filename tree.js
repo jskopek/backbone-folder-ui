@@ -74,10 +74,12 @@ var Folder = Backbone.Model.extend({
         this.set({"status": status});
     },
     flatten: function() {
-        var list = [];
+        //collections are like arrays, but with nice build-in methods
+        var list = new Backbone.Collection();
+
         var add_to_list = function(item, list) {
             //add the item to the list
-            list.push(item);
+            list.add(item);
 
             //if the item is a folder, add each of it's children to the list
             if( item instanceof Folder ) {
@@ -108,10 +110,9 @@ var FolderView = Backbone.View.extend({
     change_status: function(e) {
         e.preventDefault();
         var new_status = next_status( this.model.get("status") );
-        /*this.model.set({"status": new_status });*/
 
         //change each children's status to the folder's status
-        _.each(this.model.flatten(), function(item) {
+        this.model.flatten().each(function(item) {
             item.set({"status": new_status});
         });
 
