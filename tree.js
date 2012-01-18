@@ -25,9 +25,12 @@ var MIView = Backbone.View.extend({
 var Folder = Backbone.Model.extend({
     defaults: {
         title: "",
-        children: []
+        children: new Backbone.Collection()
     },
     initialize: function() {
+        if( _.isArray( this.get("children") ) ) {
+            this.set({"children": new Backbone.Collection(this.get("children")) });
+        }
         this.set({"view": new FolderView({ model: this }) });
     }
 });
@@ -40,17 +43,15 @@ var FolderView = Backbone.View.extend({
         this.render();
     },
     render: function() {
-        var template = _.template("<b>TREE: <%= title %></b><ul></ul>");
+        var template = _.template("<b><%= title %></b><ul></ul>");
         var html = template( this.model.toJSON() );
         $(this.el).html(html);
         var ul_el = $(this.el).find("ul");
 
-        console.log( this.model.get("title"), this.model.get("children") );
-        _.each( this.model.get("children"), function(child) {
+        this.model.get("children").each(function(child) {
             var li = $("<li></li>");
             li.html( child.get("view").el );
             ul_el.append(li);
-            console.log("LI", li.html(), ul_el);
         });
     }
 });
