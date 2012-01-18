@@ -58,27 +58,6 @@ var Folder = Backbone.Model.extend({
         //stored and calculated seperately for easy calculation and upating on nested folders
         this.update_status();
         this.get("children").bind("change:status", this.update_status, this);
-
-        //if status of tree is updated, update all children as well
-        this.bind("change:status", function() {
-            //ignore the 'mixed' status, however - this is unique to the folder
-            if( this.get("status") == "mixed" ) {
-                return false;
-            }
-
-            //unbind the status change event for children that will update the status
-            //of the folder - this would cause a recursive issue
-            this.get("children").unbind("change:status", this.update_status);
-
-            //change each children's status to the folder's status
-            this.get("children").each(function(item) {
-                item.set({"status": this.get("status")});
-            }, this);
-
-            //rebind the child status change method
-            this.get("children").bind("change:status", this.update_status, this);
-
-        }, this);
     },
     update_status: function() {
         var statuses = this.get("children").pluck("status");
@@ -93,6 +72,22 @@ var Folder = Backbone.Model.extend({
         }
 
         this.set({"status": status});
+    },
+    flatten: function() {
+        var list = [];
+        var add_to_list = function(item, list) {
+            //add the item to the list
+            list.push(item);
+
+            //if the item is a folder, add each of it's children to the list
+            if( item instanceof Folder ) {
+                item.get("children").each(function(item) {
+                    add_to_list(item, list);
+                });
+            }
+        }
+        add_to_list(this, list);
+        return list;
     }
 });
 
@@ -113,7 +108,13 @@ var FolderView = Backbone.View.extend({
     change_status: function(e) {
         e.preventDefault();
         var new_status = next_status( this.model.get("status") );
-        this.model.set({"status": new_status });
+        /*this.model.set({"status": new_status });*/
+
+        //change each children's status to the folder's status
+        _.each(this.model.flatten(), function(item) {
+            item.set({"status": new_status});
+        });
+
     },
     render: function() {
         var template = _.template("<div id='<%= cid %>'><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ul></ul>");
