@@ -239,7 +239,7 @@ var TreeView = Backbone.View.extend({
         }
 
         if( this.model.get("sortable") ) {
-            $(this.el).find("ol").nestedSortable({
+            $(this.el).children("ol").nestedSortable({
                 disableNesting: 'module_item',
                 forcePlaceholderSize: true,
                 handle: 'div',
