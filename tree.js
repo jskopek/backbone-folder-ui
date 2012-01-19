@@ -2,8 +2,16 @@ var MIcounter = 0;
 
 var Shared = Backbone.Model.extend({
     set_position: function(position, parent_item) {
-        console.log(this.get("title"), position, parent_item.get("title"));
-    },
+        /*console.log(this.get("title"), position, parent_item.get("title"));*/
+        if( parent_item.cid != this.get("parent").cid ) {
+            /*console.log("Moving from", this.get("parent").get("title"), "to", parent_item.get("title"));*/
+
+            this.get("parent").remove(this);
+            parent_item.add(this, position);
+        } else {
+            parent_item.move(this, position);
+        }
+    }
 });
 
 var MI = Shared.extend({
@@ -41,8 +49,12 @@ var MIView = Backbone.View.extend({
     render: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
         
-        var template = _.template("<div><b>MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>");
-        $(this.el).html( template( this.model.toJSON() ) );
+        var template = _.template("<div><b>MI: <%= cid %>: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>");
+        $(this.el).html( template({
+            "cid": this.model.cid,
+            "title": this.model.get("title"),
+            "status": this.model.get("status")
+        }) );
 
         this.delegateEvents();
     }
@@ -66,6 +78,11 @@ var Folder = Shared.extend({
 
         //bubble the status update trigger up a nested set of folders
         this.get("children").bind("change:status", function() { this.trigger("change:status"); }, this);
+
+        //set the parent property for children of the folder
+        this.get("children").each(function(item) { item.set({"parent": this}); }, this);
+        this.get("children").bind("add", function(item) { item.set({"parent": this}); }, this);
+        this.get("children").bind("remove", function(item) { item.set({"parent": undefined}); });
     },
     get_status: function() {
         var statuses = this.flatten(true).pluck("status");
@@ -80,6 +97,23 @@ var Folder = Shared.extend({
         }
 
         return status;
+    },
+    add: function(item, position) {
+        this.get("children").add(item, {at:position});
+    },
+    remove: function(item) {
+        this.get("children").remove(item);
+    },
+    move: function(item, position) {
+        var from = this.get("children").indexOf(item);
+        var to = parseInt(position);
+
+        var children_arr = this.get("children").models;
+        console.log("FROM", $.extend([],children_arr), from);
+        children_arr.splice(to,0, children_arr.splice(from,1)[0]);
+        console.log("TO", children_arr, to);
+
+        this.get("children").trigger("move");
     },
     flatten: function(exclude_folders) {
         //collections are like arrays, but with nice build-in methods
@@ -114,6 +148,7 @@ var FolderView = Backbone.View.extend({
 
         this.model.get("children").bind("add", this.render, this);
         this.model.get("children").bind("remove", this.render, this);
+        this.model.get("children").bind("move", this.render, this);
     },
     toggle_hide: function(e) {
         e.preventDefault();
@@ -132,7 +167,7 @@ var FolderView = Backbone.View.extend({
     render: function() {
         $(this.el).attr("id", "folder_" + this.model.cid);
 
-        var template = _.template("<div><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ol></ol>");
+        var template = _.template("<div><b><%= cid %>: <%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ol></ol>");
         var html = template({
             "cid": this.model.cid,
             "title": this.model.get("title"),

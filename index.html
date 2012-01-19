@@ -60,7 +60,6 @@
                 });
                 $(".sortable").bind("sortupdate", function() {
                     var data = $(this).nestedSortable("toHierarchy");
-                    console.log( data );
 
                     var update_order = function(data) {
                         var pnt = list.get_item_by_id( data["id"] );
@@ -77,6 +76,9 @@
                     }
                     update_order( data[0] );
                 });
+
+                f3 = list.get_item_by_id("c12");
+                i4 = list.get_item_by_id("c10");
             });
 
         </script>
