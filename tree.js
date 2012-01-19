@@ -55,12 +55,11 @@ var Folder = Backbone.Model.extend({
         }
         this.set({"view": new FolderView({ model: this }) });
 
-        //stored and calculated seperately for easy calculation and upating on nested folders
-        this.update_status();
-        this.get("children").bind("change:status", this.update_status, this);
+        //bubble the status update trigger up a nested set of folders
+        this.get("children").bind("change:status", function() { this.trigger("change:status"); }, this);
     },
-    update_status: function() {
-        var statuses = this.get("children").pluck("status");
+    get_status: function() {
+        var statuses = this.flatten(true).pluck("status");
         var uniq_status = _.uniq(statuses);
 
         if( uniq_status.length == 0 ) {
@@ -71,15 +70,17 @@ var Folder = Backbone.Model.extend({
             var status =  "mixed";
         }
 
-        this.set({"status": status});
+        return status;
     },
-    flatten: function() {
+    flatten: function(exclude_folders) {
         //collections are like arrays, but with nice build-in methods
         var list = new Backbone.Collection();
 
         var add_to_list = function(item, list) {
             //add the item to the list
-            list.add(item);
+            if( !(item instanceof Folder) || !exclude_folders ) {
+                list.add(item);
+            }
 
             //if the item is a folder, add each of it's children to the list
             if( item instanceof Folder ) {
@@ -111,6 +112,7 @@ var FolderView = Backbone.View.extend({
         this.model.set({ "hidden": !is_hidden });
     },
     change_status: function(e) {
+        console.profile("TEST");
         e.preventDefault();
         var new_status = next_status( this.model.get("status") );
 
@@ -124,7 +126,7 @@ var FolderView = Backbone.View.extend({
         var html = template({
             "cid": this.model.cid,
             "title": this.model.get("title"),
-            "status": this.model.get("status")
+            "status": this.model.get_status()
         });
         $(this.el).html(html);
 
