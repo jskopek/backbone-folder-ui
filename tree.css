@@ -17,3 +17,7 @@ ol > li li li div { padding-left: 40px; }
 ol > li li li li div { padding-left: 60px; }
 ol > li li li li li div { padding-left: 80px; }
 ol > li li li li li li div { padding-left: 100px; }
+li.placeholder {
+    height: 20px;
+    background: red;
+}
