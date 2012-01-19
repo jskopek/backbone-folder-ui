@@ -1,5 +1,12 @@
 var MIcounter = 0;
-var MI = Backbone.Model.extend({
+
+var Shared = Backbone.Model.extend({
+    set_position: function(position, parent_item) {
+        console.log(this.get("title"), position, parent_item.get("title"));
+    },
+});
+
+var MI = Shared.extend({
     defaults: {
         status: "inactive"
     },
@@ -9,9 +16,6 @@ var MI = Backbone.Model.extend({
         MIcounter++;
 
         this.set({"view": new MIView({ model: this }) });
-    },
-    set_position: function(position, parent_item) {
-        console.log("MI", this.get("title"), position, parent_item.get("title"));
     },
     change_status: function() {
         var status = next_status( this.get("status") );
@@ -44,7 +48,8 @@ var MIView = Backbone.View.extend({
     }
 })
 
-var Folder = Backbone.Model.extend({
+
+var Folder = Shared.extend({
     defaults: {
         title: "",
         children: new Backbone.Collection(),
@@ -52,9 +57,6 @@ var Folder = Backbone.Model.extend({
     },
     get_item_by_id: function(cid) {
         return this.flatten().detect(function(item) { return item.cid == cid; });
-    },
-    set_position: function(position, parent_item) {
-        console.log("FOLDER", this.get("title"), position, parent_item.get("title"));
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
