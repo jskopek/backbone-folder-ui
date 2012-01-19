@@ -226,7 +226,7 @@ var TreeView = Backbone.View.extend({
         this.render();
     },
     render: function() {
-        var template = _.template("<ol></ol>");
+        var template = _.template("<ol class='sortable'></ol>");
         $(this.el).html( template() );
 
         //loop through and add children
@@ -240,7 +240,7 @@ var TreeView = Backbone.View.extend({
 
         if( this.model.get("sortable") ) {
             $(this.el).find("ol").nestedSortable({
-                /*disableNesting: 'module_item',*/
+                disableNesting: 'module_item',
                 forcePlaceholderSize: true,
                 handle: 'div',
                 helper:	'clone',
@@ -251,27 +251,15 @@ var TreeView = Backbone.View.extend({
                 revert: 250,
                 tabSize: 25,
                 tolerance: 'pointer',
-                toleranceElement: '> div'
+                toleranceElement: '> div',
+                revertOnError: 0
             });
-            $(this.el).find("ol").bind("sorterror", $.proxy(function(e) {
-                debugger;
-            },this));
             $(this.el).find("ol").bind("sortupdate", $.proxy(function(e) {
                 var el = $(this.el).find("ol");
                 var model = this.model;
-                var all_data = $(el).nestedSortable("toHierarchy");
 
-                var update_order = function(data, parent_data) {
+                var update_order = function(data) {
                     var pnt = this.model.get_item_by_id( data["id"] );
-
-                    if( (pnt instanceof MI) && data["children"] ) {
-                        //an item was attempted to be added as a child of a module item
-                        $.merge(parent_data["children"], data["children"]);
-                        data["children"] = [];
-
-                        var pnt = this.model.get_item_by_id( parent_data["id"] );
-                        pnt.get("view").render();
-                    }
 
                     for( var index in data["children"] ) {
                         var child_data = data["children"][index];
@@ -279,13 +267,18 @@ var TreeView = Backbone.View.extend({
                         child_item.set_position(index, pnt);
 
                         if( child_data["children"] ) {
-                            update_order.call(this, child_data, data);
+                            update_order.call(this, child_data);
                         }
                     }
                 }
-                for( var index in all_data ) {
-                    update_order.call(this, all_data[index]);
+
+                var data = $(el).nestedSortable("toHierarchy");
+                for( var index in data ) {
+                    update_order.call(this, data[index]);
                 }
+
+                //just to test, for now
+                this.render();
             }, this));
 
         }
