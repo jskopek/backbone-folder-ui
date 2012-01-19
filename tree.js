@@ -215,13 +215,24 @@ var TreeView = Backbone.View.extend({
     className: "tree",
     initialize: function() {
         this.render();
-    },
-    render: function() {
+
+        this.model.get("children").bind("add", this.render, this);
+        this.model.get("children").bind("remove", this.render, this);
+        this.model.get("children").bind("move", this.render, this);
+
         var template = _.template("<ol class='sortable'></ol>");
         $(this.el).html( template() );
+        this.render();
+
+        //set sorting and bind for property updates
+        this.model.bind("change:sortable", this.set_sorting, this);
+        this.set_sorting();
+    },
+    render: function() {
 
         //loop through and add children
         var ol_el = $(this.el).find("ol");
+        $(ol_el).html("");
         if( !this.model.get("hidden") ) {
             this.model.get("children").each(function(child) {
                 child.get("view").render(); //rebinds hide event
@@ -229,6 +240,8 @@ var TreeView = Backbone.View.extend({
             });
         }
 
+    },
+    set_sorting: function() {
         if( this.model.get("sortable") ) {
             $(this.el).children("ol").nestedSortable({
                 disableNesting: 'module_item',
@@ -282,9 +295,11 @@ var TreeView = Backbone.View.extend({
                 };
                 update_order.call(this, data);
             }, this));
-
+        } else {
+            $(this.el).children("ol").nestedSortable("destroy");
         }
     }
+
 });
 
 
