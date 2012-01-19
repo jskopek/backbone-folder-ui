@@ -2,10 +2,7 @@ var MIcounter = 0;
 
 var Shared = Backbone.Model.extend({
     set_position: function(position, parent_item) {
-        /*console.log(this.get("title"), position, parent_item.get("title"));*/
         if( parent_item.cid != this.get("parent").cid ) {
-            /*console.log("Moving from", this.get("parent").get("title"), "to", parent_item.get("title"));*/
-
             this.get("parent").remove(this);
             parent_item.add(this, position);
         } else {
@@ -108,9 +105,12 @@ var Folder = Shared.extend({
         var from = this.get("children").indexOf(item);
         var to = parseInt(position);
 
+        if( from == to ) {
+            return false;
+        }
+
         var children_arr = this.get("children").models;
         children_arr.splice(to,0, children_arr.splice(from,1)[0]);
-
         this.get("children").trigger("move");
     },
     flatten: function(exclude_folders) {
