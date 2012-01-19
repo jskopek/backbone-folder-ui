@@ -44,10 +44,6 @@ var Folder = Backbone.Model.extend({
         title: "",
         children: new Backbone.Collection(),
         hidden: false,
-
-        //should be automatically caluclated based on status of children
-        //stored as property to make nested folder status changes easier
-        status: undefined
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
@@ -112,7 +108,6 @@ var FolderView = Backbone.View.extend({
         this.model.set({ "hidden": !is_hidden });
     },
     change_status: function(e) {
-        console.profile("TEST");
         e.preventDefault();
         var new_status = next_status( this.model.get("status") );
 
