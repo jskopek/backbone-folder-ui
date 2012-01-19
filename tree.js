@@ -101,6 +101,9 @@ var FolderView = Backbone.View.extend({
         this.render();
         this.model.bind("change:hidden", this.render, this);
         this.model.bind("change:status", this.render, this);
+
+        this.model.get("children").bind("add", this.render, this);
+        this.model.get("children").bind("remove", this.render, this);
     },
     toggle_hide: function(e) {
         e.preventDefault();
@@ -115,7 +118,6 @@ var FolderView = Backbone.View.extend({
         this.model.flatten().each(function(item) {
             item.set({"status": new_status});
         });
-
     },
     render: function() {
         var template = _.template("<div id='<%= cid %>'><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ul></ul>");
