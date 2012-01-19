@@ -179,8 +179,8 @@ var FolderView = Backbone.View.extend({
         $(this.el).html(html);
 
         //bind hide event
-        $(this.el).find("#folder_" + this.model.cid + " > div a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
-        $(this.el).find("#folder_" + this.model.cid + " > div a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
+        $(this.el).children("div").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).children("div").find("a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
 
         //loop through and add children
         var ol_el = $(this.el).find("ol");
@@ -282,9 +282,6 @@ var TreeView = Backbone.View.extend({
                     "children": data
                 };
                 update_order.call(this, data);
-
-                //just to test, for now
-                this.render();
             }, this));
 
         }
