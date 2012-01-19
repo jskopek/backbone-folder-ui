@@ -69,6 +69,8 @@ var Folder = Backbone.Model.extend({
 
         //bubble the status update trigger up a nested set of folders
         this.get("children").bind("change:status", function() { this.trigger("change:status"); }, this);
+        this.get("children").bind("add", function() { this.trigger("change:status"); }, this);
+        this.get("children").bind("remove", function() { this.trigger("change:status"); }, this);
 
         //set the parent property for children of the folder
         this.get("children").each(function(item) { item.set({"parent": this}); }, this);
