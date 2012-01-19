@@ -62,9 +62,20 @@
                     var data = $(this).nestedSortable("toHierarchy");
                     console.log( data );
 
-                    var pnt = undefined;
-                    var update_order = function() {
+                    var update_order = function(data) {
+                        var pnt = list.get_item_by_id( data["id"] );
+
+                        for( var index in data["children"] ) {
+                            var child_data = data["children"][index];
+                            var child_item = list.get_item_by_id( child_data["id"] );
+                            child_item.set_position(index, pnt);
+
+                            if( child_data["children"] ) {
+                                update_order( child_data );
+                            }
+                        }
                     }
+                    update_order( data[0] );
                 });
             });
 

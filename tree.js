@@ -11,7 +11,7 @@ var MI = Backbone.Model.extend({
         this.set({"view": new MIView({ model: this }) });
     },
     set_position: function(position, parent_item) {
-        console.log("MI", position, parent_item);
+        console.log("MI", this.get("title"), position, parent_item.get("title"));
     },
     change_status: function() {
         var status = next_status( this.get("status") );
@@ -50,8 +50,11 @@ var Folder = Backbone.Model.extend({
         children: new Backbone.Collection(),
         hidden: false,
     },
+    get_item_by_id: function(cid) {
+        return this.flatten().detect(function(item) { return item.cid == cid; });
+    },
     set_position: function(position, parent_item) {
-        console.log("F", position, parent_item);
+        console.log("FOLDER", this.get("title"), position, parent_item.get("title"));
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
