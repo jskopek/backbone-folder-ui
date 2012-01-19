@@ -109,9 +109,7 @@ var Folder = Shared.extend({
         var to = parseInt(position);
 
         var children_arr = this.get("children").models;
-        console.log("FROM", $.extend([],children_arr), from);
         children_arr.splice(to,0, children_arr.splice(from,1)[0]);
-        console.log("TO", children_arr, to);
 
         this.get("children").trigger("move");
     },

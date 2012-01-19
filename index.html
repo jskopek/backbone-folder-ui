@@ -40,9 +40,7 @@
                     "children": [new MI(), new MI(), new MI(), new MI()]
                 };
                 list = new Folder(data);
-                var listView = new FolderView({ model: list });
-                $("#tree").html(listView.el);
-
+                $("#tree").html(list.get("view").el);
 
                 $('.sortable').nestedSortable({
                     disableNesting: 'module_item',
