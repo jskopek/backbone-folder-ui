@@ -273,9 +273,15 @@ var TreeView = Backbone.View.extend({
                 }
 
                 var data = $(el).nestedSortable("toHierarchy");
-                for( var index in data ) {
-                    update_order.call(this, data[index]);
-                }
+
+                //insert the controlling tree as the 'root' parent - first-level
+                //children will set themselves as the children of it, and will
+                //update their positioning accordingly
+                data = {
+                    "id": this.model.cid,
+                    "children": data
+                };
+                update_order.call(this, data);
 
                 //just to test, for now
                 this.render();
