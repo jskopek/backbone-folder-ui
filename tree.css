@@ -19,5 +19,8 @@ ol > li li li li li div { padding-left: 80px; }
 ol > li li li li li li div { padding-left: 100px; }
 li.placeholder {
     height: 20px;
-    background: red;
 }
+ol li.placeholder { background: red; }
+ol li li.placeholder { background: green; }
+ol li li li.placeholder { background: yellow; }
+ol li li li li.placeholder { background: pink; }
