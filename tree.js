@@ -10,6 +10,9 @@ var MI = Backbone.Model.extend({
 
         this.set({"view": new MIView({ model: this }) });
     },
+    set_position: function(position, parent_item) {
+        console.log("MI", position, parent_item);
+    },
     change_status: function() {
         var status = next_status( this.get("status") );
         this.set({"status": status });
@@ -32,7 +35,9 @@ var MIView = Backbone.View.extend({
         this.model.change_status();
     },
     render: function() {
-        var template = _.template("<b>MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b>");
+        $(this.el).attr("id", "mi_" + this.model.cid);
+        
+        var template = _.template("<div><b>MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>");
         $(this.el).html( template( this.model.toJSON() ) );
 
         this.delegateEvents();
@@ -44,6 +49,9 @@ var Folder = Backbone.Model.extend({
         title: "",
         children: new Backbone.Collection(),
         hidden: false,
+    },
+    set_position: function(position, parent_item) {
+        console.log("F", position, parent_item);
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
@@ -109,15 +117,17 @@ var FolderView = Backbone.View.extend({
     },
     change_status: function(e) {
         e.preventDefault();
-        var new_status = next_status( this.model.get("status") );
+        var new_status = next_status( this.model.get_status() );
 
         //change each children's status to the folder's status
-        this.model.flatten().each(function(item) {
+        this.model.flatten(true).each(function(item) {
             item.set({"status": new_status});
         });
     },
     render: function() {
-        var template = _.template("<div id='<%= cid %>'><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ul></ul>");
+        $(this.el).attr("id", "folder_" + this.model.cid);
+
+        var template = _.template("<div><b><%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/></div><ol></ol>");
         var html = template({
             "cid": this.model.cid,
             "title": this.model.get("title"),
@@ -126,17 +136,15 @@ var FolderView = Backbone.View.extend({
         $(this.el).html(html);
 
         //bind hide event
-        $(this.el).find("#" + this.model.cid + " a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
-        $(this.el).find("#" + this.model.cid + " a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
+        $(this.el).find("#folder_" + this.model.cid + " > div a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).find("#folder_" + this.model.cid + " > div a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
 
         //loop through and add children
-        var ul_el = $(this.el).find("ul");
+        var ol_el = $(this.el).find("ol");
         if( !this.model.get("hidden") ) {
             this.model.get("children").each(function(child) {
-                var li = $("<li></li>");
                 child.get("view").render(); //rebinds hide event
-                li.html( child.get("view").el );
-                ul_el.append(li);
+                ol_el.append( child.get("view").el );
             });
         }
     }

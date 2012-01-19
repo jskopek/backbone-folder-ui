@@ -5,6 +5,8 @@
         <script src="underscore-1.1.7.js"></script>
         <script src="jquery-1.7.1.js"></script>
         <script src="backbone-0.5.3.js"></script>
+        <script src="jquery-ui-1.8.17.custom.min.js"></script>
+        <script src="jquery.ui.nestedSortable.js"></script>
 
         <!--<link rel="stylesheet" type="text/css" href="tree.css"/>-->
         <!--<script src="tree_item.js"></script>-->
@@ -13,7 +15,7 @@
         <script type="text/javascript">
             var list;
             $(document).ready(function() {
-                list = new Folder({
+                var data = {
                     "title": "ROOT",
                     "children": [
                         new Folder({
@@ -32,9 +34,38 @@
                         }),
                         new MI()
                     ]
-                });
+                };
+                var data_new = {
+                    "title": "ROOTS MANUVA",
+                    "children": [new MI(), new MI(), new MI(), new MI()]
+                };
+                list = new Folder(data);
                 var listView = new FolderView({ model: list });
                 $("#tree").html(listView.el);
+
+
+                $('.sortable').nestedSortable({
+                    disableNesting: 'module_item',
+                    forcePlaceholderSize: true,
+                    handle: 'div',
+                    helper:	'clone',
+                    items: 'li',
+                    maxLevels: 30,
+                    opacity: .6,
+                    placeholder: 'placeholder',
+                    revert: 250,
+                    tabSize: 25,
+                    tolerance: 'pointer',
+                    toleranceElement: '> div'
+                });
+                $(".sortable").bind("sortupdate", function() {
+                    var data = $(this).nestedSortable("toHierarchy");
+                    console.log( data );
+
+                    var pnt = undefined;
+                    var update_order = function() {
+                    }
+                });
             });
 
         </script>
@@ -42,166 +73,16 @@
     </head>
     <body>
         <h1>Testing</h1>
-        <ul id="tree"></ul>
-        <!--<div id="tree1" class="thm_tree" option_select="true" option_secondary_select="true" option_tertiary_select="false" option_titles_visible="true" option_icon="true" option_groups="true" sortable="False" option_tooltip="true" option_highlight="true" option_show_status_title="false" option_empty_list_message="&quot;Add content here...&quot;" option_hide_item_selects="false" option_preview="false" option_row_width="210" option_max_height="250" easy_select="False">-->
-            <!-- -->
-            <!--<div id="powerpoint_plugin" group="" order="4" is_checked="1" icon_type="setting" tooltip="Click this item to download a program that will allow you to control monocleCAT directly from your presentation tool (such as PowerPoint), including activating questions, and viewing the results" no_select="1" callback="download_powerpoint_plugin">Presentation Tool</div>-->
-            <!-- -->
-            <!--<div id="course_packs_dialog" group="" order="3" is_checked="1" icon_type="setting" tooltip="Course packs allow you find and import content packages for your course subject matter (such as questions and demonstrations,) as well as to publish course packs that other instructors may use." no_select="1" callback="generate_coursepack_dialog">Course packs</div>-->
-            <!-- -->
-            <!--<div id="course_config_link" group="" order="2" is_checked="1" icon_type="setting" tooltip="In course settings you can enable/disable features, modify class session times (which determine how your data is organized,) and modify privacy settings." no_select="1" callback="course_config_dialog">Settings</div>-->
-            <!-- -->
-            <!--<div id="course_availability_control" group="" order="1" is_checked="1" status="on" status_list_name="course" icon_type="setting" tooltip="Checking this item will make the course available so that students can begin logging into it in order to participate." callback="">Course available</div>-->
-            <!-- -->
-            <!--<div id="gradebook" group="" order="5" is_checked="1" icon_type="setting" tooltip="View the course gradebook" no_select="1" callback="load_gradebook">Gradebook</div>-->
-            <!-- -->
-            <!--</div> -->
-        <!--<div id="tree2" class="thm_tree" option_select="true" option_secondary_select="true" option_tertiary_select="false" option_titles_visible="true" option_icon="true" option_groups="true" sortable="True" option_tooltip="true" option_highlight="true" option_show_status_title="false" option_empty_list_message="&quot;Add content here...&quot;" option_hide_item_selects="false" option_preview="false" option_row_width="210" option_max_height="250" status_list_name="default" selectable="true" easy_select="False">-->
-            <!--	-->
-            <!--<div id="" group="Veterinary" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="System Design" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Biology" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Sociology" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Accounting" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Economics" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Anatomy" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Geography" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Anthro" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Calculus" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Organic Chemistry 3D" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Organic Chemistry 2D" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Chemistry" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="" group="Antho 4" is_group="1" order="0" callback=""></div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__14514" group="" order="1" icon_type="item" tooltip="Boolean identities can be used to simplify a circuit to use less gates but still have the same truth table." callback="">Simplification</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16289" group="Calculus" order="1" icon_type="item" tooltip="Demo Vector Field Explore" callback="">Vector Field Explore</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16291" group="Calculus" order="1" icon_type="item" tooltip="demonstration of 3D surfaces and their intersection with slicing planes." callback="">3D Surfaces</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16293" group="Calculus" order="1" icon_type="item" tooltip="simulation of  vector fields and visual interpretation of gradient and divergence of a vector field. " callback="">Vector Field</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16303" group="Chemistry" order="1" is_sec_checked="1" icon_type="item" tooltip="3D interactive simulation of Ester synthesis from acyl chlorides and alcohols." callback="">Carbonyl Reaction</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16315" group="Veterinary" order="1" icon_type="item" tooltip="Folding a polypeptide - considers the 4 levels of structure" callback="">ProteinFolding</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16317" group="Biology" order="1" icon_type="item" tooltip="The formation of glycosidic bonds, in the synthesis of polysaccharides" callback="">Polysaccharides</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16324" group="Biology" order="1" icon_type="item" tooltip="Walkthrough of the TCA cycle (also called the citric acid cycle or Krebs' cycle)" callback="">TCA Cycle</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16329" group="Sociology" order="1" icon_type="item" tooltip="The central concept map concerning sustainability" callback="">Sustainability(Main)</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16331" group="Sociology" order="1" icon_type="item" tooltip="Concept map for corporate sustainability" callback="">Sustainability(Corporate)</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16333" group="Sociology" order="1" icon_type="item" tooltip="Concept map for alternative sustainability" callback="">Sustainability(Alternative)</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16335" group="Chemistry" order="1" is_sec_checked="1" icon_type="item" tooltip="A walkthrough of enzymatic protein cleavage by chymotrypsin" callback="">Chymotrypsin</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16342" group="Chemistry" order="1" is_sec_checked="1" icon_type="item" tooltip="A technique widely used  to separate proteins according to their electrophoretic mobility." callback="">SDS Page</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16344" group="Accounting" order="1" is_ter_checked="1" icon_type="item" tooltip="Constructing a master budget and sorting examples" callback="">Master budget walkthrough</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16346" group="Accounting" order="1" is_ter_checked="1" icon_type="item" tooltip="Sorting example activities by their level in an organization" callback="">Levels of Activity</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16348" group="Accounting" order="1" is_ter_checked="1" icon_type="item" tooltip="A scenario that illustrates the difference between cost types" callback="">Fixed vs. Variable costs</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16350" group="Accounting" order="1" is_ter_checked="1" icon_type="item" tooltip="Differences between 2 types of accounting" callback="">Financial vs. Managerial Accounting</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16352" group="Accounting" order="1" is_ter_checked="1" icon_type="item" tooltip="Interactive graph: Finding the breakeven cost, and determining profit" callback="">Breakeven point</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16354" group="Organic Chemistry 2D" order="1" icon_type="item" tooltip="Demo Physical Property3" callback="">PhysicProp3</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16359" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo E1-1 Mechanism" callback="">sub elim-6</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16363" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo E1-2 Mechanism" callback="">sub elim-3</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16366" group="Organic Chemistry 2D" order="1" icon_type="item" tooltip="Demo SN2-1" callback="">sub elim-1</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16369" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo SN2-2" callback="">sub elim-2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16373" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo SN1-2" callback="">sub elim-5</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16379" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo SN1-1" callback="">sub elim-4</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16385" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Alkene-1" callback="">Alkene-1</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16389" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Alkene-5" callback="">Alkene-5</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16395" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Alkene-3" callback="">Alkene-3</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16399" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Alkene-2" callback="">Alkene-2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16403" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo AE-1" callback="">Alkene and Ethers 1</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16408" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo AE2" callback="">Alkene and Ethers 2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16412" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Carbonyl-2" callback="">Carbonyl-2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16414" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo Carbonyl-1" callback="">Carbonyl-1</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16418" group="Geography" order="1" icon_type="item" tooltip="An interactive demo, illustrating the cycle of D&amp;M" callback="">Degradation and marginalization Part 1</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16420" group="Geography" order="1" icon_type="item" tooltip="An interactive demo, illustrating the cycle of D&amp;M" callback="">Degradation and marginalization Part 2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16422" group="Geography" order="1" icon_type="item" tooltip="Movements form when people are faced with a similar env. threat" callback="">Environmental Identity and Social Movement Thesis</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16424" group="Anatomy" order="1" icon_type="item" tooltip="Effects of damage to spinal cord integrity" callback="">Spinal cord</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16430" group="Anatomy" order="1" icon_type="item" tooltip="Errors in implantation of the embryo; the female reproductive system" callback="">Ectopic pregnancy</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16432" group="Biology" order="1" icon_type="item" tooltip="3 ways in which damaged DNA can be repaired" callback="">DNA Repair</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16434" group="Biology" order="1" icon_type="item" tooltip="Purpose &amp; mechanism of telomeric modifications, and its role in cancer." callback="">Telomerase</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16436" group="Biology" order="1" icon_type="item" tooltip="The recruiting of blood vessels by tumours" callback="">Angiogenesis</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16438" group="Anatomy" order="1" icon_type="item" tooltip="Effects of gallstones; anatomy of the bile ducts &amp; gallbladder" callback="">Gallstones</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16440" group="Anatomy" order="1" icon_type="item" tooltip="Effects of kidney stones; anatomy of the kidney." callback="">Kidney stones</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16442" group="Biology" order="1" icon_type="item" tooltip="Apotosis: mechanism and role in cancer" callback="">Apoptosis events</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16444" group="System Design" order="1" icon_type="item" tooltip="How a data packet travels over the internet." callback="">Internet</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16446" group="Anthro" order="1" icon_type="item" tooltip="Demo Anthropology" callback="">Anthro</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16453" group="Anthro" order="1" icon_type="item" tooltip="Demo Sustainabilty" callback="">Sustainabilty</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16456" group="Biology" order="1" icon_type="item" tooltip="Demo Bio - Bio1" callback="">Size Comparison</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16461" group="Biology" order="1" icon_type="item" tooltip="Demo Bio - Bio3" callback="">Temperature Affect</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16466" group="Economics" order="1" icon_type="item" tooltip="showing who pays sales tax using supply and demand curve " callback="">tax</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16469" group="Antho 4" order="1" icon_type="item" tooltip="Demo realestate2" callback="">realestate2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16474" group="Organic Chemistry 3D" order="1" icon_type="item" tooltip="Demo AE" callback="">AE</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16478" group="System Design" order="1" icon_type="item" tooltip="Digital Design" callback="">Circuit Sim</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16484" group="System Design" order="1" icon_type="item" tooltip="Demo conceptMap" callback="">conceptMap</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16487" group="System Design" order="1" icon_type="item" tooltip="Sort Algorithms" callback="">sorting</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__16492" group="Veterinary" order="1" icon_type="item" tooltip="Demo Veterinary" callback="">Veterinary</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__28533" group="" order="57" icon_type="item" tooltip="Capital cost allowance spreadsheet walkthrough" callback="">Capital cost allowance CCA 2</div>-->
-            <!--	-->
-            <!--<div id="key__demo_demo__40927" group="" order="58" icon_type="item" tooltip="Phun with Physics" callback="">Physics Phun</div>-->
-            <!--	-->
-            <!--</div>-->
+        <ol class="sortable_new">
+            <li><div>Some content</div></li>
+            <li><div>Some content</div>
+                <ol>
+                    <li><div>Some sub-item content</div></li>
+                    <li><div>Some sub-item content</div></li>
+                </ol>
+            </li>
+            <li><div>Some content</div></li>
+        </ol>
+        <ol class="sortable" id="tree"></ol>
     </body>
 </html>
