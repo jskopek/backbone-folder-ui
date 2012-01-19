@@ -1,17 +1,6 @@
 var MIcounter = 0;
 
-var Shared = Backbone.Model.extend({
-    set_position: function(position, parent_item) {
-        if( parent_item.cid != this.get("parent").cid ) {
-            this.get("parent").remove(this);
-            parent_item.add(this, position);
-        } else {
-            parent_item.move(this, position);
-        }
-    }
-});
-
-var MI = Shared.extend({
+var MI = Backbone.Model.extend({
     defaults: {
         status: "inactive"
     },
@@ -57,7 +46,7 @@ var MIView = Backbone.View.extend({
     }
 })
 
-var Folder = Shared.extend({
+var Folder = Backbone.Model.extend({
     defaults: {
         title: "",
         children: new Backbone.Collection(),
@@ -259,13 +248,21 @@ var TreeView = Backbone.View.extend({
                 var model = this.model;
 
                 var update_order = function(data) {
-                    var pnt = this.model.get_item_by_id( data["id"] );
+                    var parent_folder = this.model.get_item_by_id( data["id"] );
 
-                    for( var index in data["children"] ) {
-                        var child_data = data["children"][index];
+                    for( var position in data["children"] ) {
+                        var child_data = data["children"][position];
                         var child_item = this.model.get_item_by_id( child_data["id"] );
-                        child_item.set_position(index, pnt);
 
+                        //set the position of the item
+                        if( parent_folder.cid != child_item.get("parent").cid ) {
+                            child_item.get("parent").remove( child_item );
+                            parent_folder.add(child_item, position);
+                        } else {
+                            parent_folder.move(child_item, position);
+                        }
+
+                        //if the item has children, do ordering on them
                         if( child_data["children"] ) {
                             update_order.call(this, child_data);
                         }
