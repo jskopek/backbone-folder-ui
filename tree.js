@@ -57,21 +57,26 @@ var MIView = Backbone.View.extend({
     }
 })
 
-
 var Folder = Shared.extend({
     defaults: {
         title: "",
         children: new Backbone.Collection(),
-        hidden: false,
+        hidden: false
     },
     get_item_by_id: function(cid) {
         return this.flatten().detect(function(item) { return item.cid == cid; });
+    },
+    view_init: function() {
+        this.set({"view": new FolderView({ model: this }) });
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
             this.set({"children": new Backbone.Collection(this.get("children")) });
         }
-        this.set({"view": new FolderView({ model: this }) });
+
+        //initialize the view - this is done in a seperate method
+        //to make it easier for subclassed models to have different views (namely, Tree)
+        this.view_init();
 
         //bubble the status update trigger up a nested set of folders
         this.get("children").bind("change:status", function() { this.trigger("change:status"); }, this);
@@ -203,4 +208,74 @@ function next_status(current_status) {
     }
     return statuses[status_index];
 }
+
+// TREE MODEL & VIEW ///
+var Tree = Folder.extend({
+    defaults: {
+        "sortable": false,
+        "children": Backbone.Collection
+    },
+    view_init: function() {
+        this.set({"view": new TreeView({ model: this }) });
+    },
+});
+var TreeView = Backbone.View.extend({
+    tagName: "div",
+    className: "tree",
+    initialize: function() {
+        this.render();
+    },
+    render: function() {
+        var template = _.template("<ol></ol>");
+        $(this.el).html( template() );
+
+        //loop through and add children
+        var ol_el = $(this.el).find("ol");
+        if( !this.model.get("hidden") ) {
+            this.model.get("children").each(function(child) {
+                child.get("view").render(); //rebinds hide event
+                ol_el.append( child.get("view").el );
+            });
+        }
+
+        if( this.model.get("sortable") ) {
+            $(this.el).find("ol").nestedSortable({
+                disableNesting: 'module_item',
+                forcePlaceholderSize: true,
+                handle: 'div',
+                helper:	'clone',
+                items: 'li',
+                maxLevels: 30,
+                opacity: .6,
+                placeholder: 'placeholder',
+                revert: 250,
+                tabSize: 25,
+                tolerance: 'pointer',
+                toleranceElement: '> div'
+            });
+            $(this.el).find("ol").bind("sortupdate", $.proxy(function(e) {
+                var el = $(this.el).find("ol");
+                var model = this.model;
+                var data = $(el).nestedSortable("toHierarchy");
+
+                var update_order = function(data) {
+                    var pnt = this.model.get_item_by_id( data["id"] );
+
+                    for( var index in data["children"] ) {
+                        var child_data = data["children"][index];
+                        var child_item = this.model.get_item_by_id( child_data["id"] );
+                        child_item.set_position(index, pnt);
+
+                        if( child_data["children"] ) {
+                            update_order.call(this, child_data);
+                        }
+                    }
+                }
+                update_order.call(this, data[0]);
+            }, this));
+
+        }
+    }
+});
+
 

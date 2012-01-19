@@ -17,7 +17,7 @@
             var list;
             $(document).ready(function() {
                 var data = {
-                    "title": "ROOT",
+                    "sortable": true,
                     "children": [
                         new Folder({
                             "title": "Folder 1",
@@ -37,47 +37,15 @@
                     ]
                 };
                 var data_new = {
-                    "title": "ROOTS MANUVA",
+                    "sortable": true,
                     "children": [new MI(), new MI(), new MI(), new MI()]
                 };
-                list = new Folder(data);
-                $("#tree").html(list.get("view").el);
-
-                $('.sortable').nestedSortable({
-                    disableNesting: 'module_item',
-                    forcePlaceholderSize: true,
-                    handle: 'div',
-                    helper:	'clone',
-                    items: 'li',
-                    maxLevels: 30,
-                    opacity: .6,
-                    placeholder: 'placeholder',
-                    revert: 250,
-                    tabSize: 25,
-                    tolerance: 'pointer',
-                    toleranceElement: '> div'
-                });
-                $(".sortable").bind("sortupdate", function() {
-                    var data = $(this).nestedSortable("toHierarchy");
-
-                    var update_order = function(data) {
-                        var pnt = list.get_item_by_id( data["id"] );
-
-                        for( var index in data["children"] ) {
-                            var child_data = data["children"][index];
-                            var child_item = list.get_item_by_id( child_data["id"] );
-                            child_item.set_position(index, pnt);
-
-                            if( child_data["children"] ) {
-                                update_order( child_data );
-                            }
-                        }
-                    }
-                    update_order( data[0] );
-                });
-
-                f3 = list.get_item_by_id("c12");
-                i4 = list.get_item_by_id("c10");
+                var data_folders = {
+                    "sortable": true,
+                    "children": [new Folder({"title": "F1"})]
+                };
+                tree = new Tree(data);
+                $("#tree").html(tree.get("view").el);
             });
 
         </script>
@@ -85,16 +53,6 @@
     </head>
     <body>
         <h1>Testing</h1>
-        <ol class="sortable_new">
-            <li><div>Some content</div></li>
-            <li><div>Some content</div>
-                <ol>
-                    <li><div>Some sub-item content</div></li>
-                    <li><div>Some sub-item content</div></li>
-                </ol>
-            </li>
-            <li><div>Some content</div></li>
-        </ol>
         <ol class="sortable" id="tree"></ol>
     </body>
 </html>
