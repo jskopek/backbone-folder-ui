@@ -22,11 +22,7 @@ var Folder = Backbone.Model.extend({
     defaults: {
         title: "",
         children: new Backbone.Collection(),
-        hidden: false,
-        status: undefined
-    },
-    init_view: function() {
-        return new FolderView({"model":this});
+        hidden: false
     },
     get_item_by_id: function(cid) {
         return this.flatten().detect(function(item) { return item.cid == cid; });
@@ -36,41 +32,14 @@ var Folder = Backbone.Model.extend({
             this.set({"children": new Backbone.Collection(this.get("children")) });
         }
 
-        //update the folder's status based on the status of it's children
-        this.get("children").bind("change:status", this.update_status, this);
-        this.get("children").bind("add", this.update_status, this);
-        this.get("children").bind("remove", this.update_status, this);
-        this.update_status();
-
-        //update the children when the status of the folder is changed
-        this.bind("change:status", function() {
-            var status = this.get("status");
-            if( status == "mixed" ) {
-                return false;
-            }
-            this.get("children").each(function(child) { 
-                child.set({"status": status}); 
-            });
-        }, this);
 
         //set the parent property for children of the folder
         this.get("children").each(function(item) { item.set({"parent": this}); }, this);
         this.get("children").bind("add", function(item) { item.set({"parent": this}); }, this);
         this.get("children").bind("remove", function(item) { item.set({"parent": undefined}); });
     },
-    update_status: function() {
-        var statuses = this.get("children").pluck("status");
-        var uniq_status = _.uniq(statuses);
-
-        if( uniq_status.length == 0 ) {
-            var status =  "inactive";
-        } else if( uniq_status.length == 1 ) {
-            var status =  uniq_status[0];
-        } else {
-            var status =  "mixed";
-        }
-
-        this.set({"status": status});
+    init_view: function() {
+        return new FolderView({"model":this});
     },
     add: function(item, position) {
         this.get("children").add(item, {at:position});
@@ -110,6 +79,62 @@ var Folder = Backbone.Model.extend({
         add_to_list(this, list);
         return list;
     }
+
+});
+
+
+// TREE MODEL & VIEW ///
+var Tree = Folder.extend({
+    defaults: {
+        "sortable": false,
+        "children": Backbone.Collection
+    }
+});
+
+
+////// STATUS STUFF //////
+var StatusFolder = Folder.extend({
+    defaults: $.extend({}, Folder.prototype.defaults, {
+        status: undefined
+    }),
+    init_view: function() {
+        return new StatusFolderView({ "model": this });
+    },
+    initialize: function() {
+        Folder.prototype.initialize.call(this);
+
+        //update the folder's status based on the status of it's children
+        this.get("children").bind("change:status", this.update_status, this);
+        this.get("children").bind("add", this.update_status, this);
+        this.get("children").bind("remove", this.update_status, this);
+        this.update_status();
+
+        //update the children when the status of the folder is changed
+        this.bind("change:status", function() {
+            var status = this.get("status");
+            if( status == "mixed" ) {
+                return false;
+            }
+            this.get("children").each(function(child) { 
+                child.set({"status": status}); 
+            });
+        }, this);
+
+    },
+    update_status: function() {
+        var statuses = this.get("children").pluck("status");
+        var uniq_status = _.uniq(statuses);
+
+        if( uniq_status.length == 0 ) {
+            var status =  "inactive";
+        } else if( uniq_status.length == 1 ) {
+            var status =  uniq_status[0];
+        } else {
+            var status =  "mixed";
+        }
+
+        this.set({"status": status});
+    }
 });
 
 //helper function for development mode; switches statuses
@@ -126,11 +151,4 @@ function next_status(current_status) {
     return statuses[status_index];
 }
 
-// TREE MODEL & VIEW ///
-var Tree = Folder.extend({
-    defaults: {
-        "sortable": false,
-        "children": Backbone.Collection
-    }
-});
 
