@@ -4,12 +4,13 @@ var MI = Backbone.Model.extend({
     defaults: {
         status: "inactive"
     },
+    init_view: function() {
+        return new MIView({ "model": this });
+    },
     initialize: function() {
         //temp way of setting MI name really quickly
         this.set({"title": "Module Item " + MIcounter});
         MIcounter++;
-
-        this.set({"view": new MIView({ model: this }) });
     },
     change_status: function() {
         var status = next_status( this.get("status") );
@@ -53,20 +54,16 @@ var Folder = Backbone.Model.extend({
         hidden: false,
         status: undefined
     },
+    init_view: function() {
+        return new FolderView({"model":this});
+    },
     get_item_by_id: function(cid) {
         return this.flatten().detect(function(item) { return item.cid == cid; });
-    },
-    view_init: function() {
-        this.set({"view": new FolderView({ model: this }) });
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
             this.set({"children": new Backbone.Collection(this.get("children")) });
         }
-
-        //initialize the view - this is done in a seperate method
-        //to make it easier for subclassed models to have different views (namely, Tree)
-        this.view_init();
 
         //update the folder's status based on the status of it's children
         this.get("children").bind("change:status", this.update_status, this);
@@ -186,8 +183,8 @@ var FolderView = Backbone.View.extend({
         var ol_el = $(this.el).find("ol");
         if( !this.model.get("hidden") ) {
             this.model.get("children").each(function(child) {
-                child.get("view").render(); //rebinds hide event
-                ol_el.append( child.get("view").el );
+                var view = child.init_view();
+                ol_el.append(view.el );
             });
         }
     }
@@ -214,10 +211,7 @@ var Tree = Folder.extend({
     defaults: {
         "sortable": false,
         "children": Backbone.Collection
-    },
-    view_init: function() {
-        this.set({"view": new TreeView({ model: this }) });
-    },
+    }
 });
 var TreeView = Backbone.View.extend({
     tagName: "div",
@@ -244,8 +238,8 @@ var TreeView = Backbone.View.extend({
         $(ol_el).html("");
         if( !this.model.get("hidden") ) {
             this.model.get("children").each(function(child) {
-                child.get("view").render(); //rebinds hide event
-                ol_el.append( child.get("view").el );
+                var view = child.init_view({"model": this});
+                ol_el.append( view.el );
             });
         }
 

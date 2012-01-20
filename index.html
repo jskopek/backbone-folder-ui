@@ -45,7 +45,12 @@
                     "children": [new Folder({"title": "F1"})]
                 };
                 tree = new Tree(data);
-                $("#tree").html(tree.get("view").el);
+                var fview = new TreeView({"model": tree});
+                $("#tree").html(fview.el);
+
+                f1 = tree.get_item_by_id("c2");
+                m1 = f1.get_item_by_id("c1");
+                m4 = tree.get_item_by_id("c5");
             });
 
         </script>
