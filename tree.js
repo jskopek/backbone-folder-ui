@@ -50,7 +50,8 @@ var Folder = Backbone.Model.extend({
     defaults: {
         title: "",
         children: new Backbone.Collection(),
-        hidden: false
+        hidden: false,
+        status: undefined
     },
     get_item_by_id: function(cid) {
         return this.flatten().detect(function(item) { return item.cid == cid; });
@@ -67,23 +68,30 @@ var Folder = Backbone.Model.extend({
         //to make it easier for subclassed models to have different views (namely, Tree)
         this.view_init();
 
-        //bubble the status update trigger up a nested set of folders
-        this.get("children").bind("change:status", function() { this.trigger("change:status"); }, this);
-        this.get("children").bind("add", function() { this.trigger("change:status"); }, this);
-        this.get("children").bind("remove", function() { this.trigger("change:status"); }, this);
+        //update the folder's status based on the status of it's children
+        this.get("children").bind("change:status", this.update_status, this);
+        this.get("children").bind("add", this.update_status, this);
+        this.get("children").bind("remove", this.update_status, this);
+        this.update_status();
+
+        //update the children when the status of the folder is changed
+        this.bind("change:status", function() {
+            var status = this.get("status");
+            if( status == "mixed" ) {
+                return false;
+            }
+            this.get("children").each(function(child) { 
+                child.set({"status": status}); 
+            });
+        }, this);
 
         //set the parent property for children of the folder
         this.get("children").each(function(item) { item.set({"parent": this}); }, this);
         this.get("children").bind("add", function(item) { item.set({"parent": this}); }, this);
         this.get("children").bind("remove", function(item) { item.set({"parent": undefined}); });
     },
-    /*get_status: function() {*/
-    /*var children = _.map(this.getchildren(), function(child) { return child.get_status() })*/
-    /*//detect differences between children*/
-
-    /*},*/
-    get_status: function() {
-        var statuses = this.flatten(true).pluck("status");
+    update_status: function() {
+        var statuses = this.get("children").pluck("status");
         var uniq_status = _.uniq(statuses);
 
         if( uniq_status.length == 0 ) {
@@ -94,7 +102,7 @@ var Folder = Backbone.Model.extend({
             var status =  "mixed";
         }
 
-        return status;
+        this.set({"status": status});
     },
     add: function(item, position) {
         this.get("children").add(item, {at:position});
@@ -156,12 +164,8 @@ var FolderView = Backbone.View.extend({
     },
     change_status: function(e) {
         e.preventDefault();
-        var new_status = next_status( this.model.get_status() );
-
-        //change each children's status to the folder's status
-        this.model.flatten(true).each(function(item) {
-            item.set({"status": new_status});
-        });
+        var new_status = next_status( this.model.get("status") );
+        this.model.set({"status": new_status});
     },
     render: function() {
         $(this.el).attr("id", "folder_" + this.model.cid);
@@ -170,7 +174,7 @@ var FolderView = Backbone.View.extend({
         var html = template({
             "cid": this.model.cid,
             "title": this.model.get("title"),
-            "status": this.model.get_status()
+            "status": this.model.get("status")
         });
         $(this.el).html(html);
 
