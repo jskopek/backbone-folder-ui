@@ -77,6 +77,11 @@ var Folder = Backbone.Model.extend({
         this.get("children").bind("add", function(item) { item.set({"parent": this}); }, this);
         this.get("children").bind("remove", function(item) { item.set({"parent": undefined}); });
     },
+    /*get_status: function() {*/
+    /*var children = _.map(this.getchildren(), function(child) { return child.get_status() })*/
+    /*//detect differences between children*/
+
+    /*},*/
     get_status: function() {
         var statuses = this.flatten(true).pluck("status");
         var uniq_status = _.uniq(statuses);
