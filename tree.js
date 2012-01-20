@@ -217,7 +217,6 @@ var TreeView = Backbone.View.extend({
     tagName: "div",
     className: "tree",
     initialize: function() {
-        this.render();
 
         this.model.get("children").bind("add", this.render, this);
         this.model.get("children").bind("remove", this.render, this);
