@@ -31,12 +31,6 @@ var Folder = Backbone.Model.extend({
         if( _.isArray( this.get("children") ) ) {
             this.set({"children": new Backbone.Collection(this.get("children")) });
         }
-
-
-        //set the parent property for children of the folder
-        this.get("children").each(function(item) { item.set({"parent": this}); }, this);
-        this.get("children").bind("add", function(item) { item.set({"parent": this}); }, this);
-        this.get("children").bind("remove", function(item) { item.set({"parent": undefined}); });
     },
     init_view: function() {
         return new FolderView({"model":this});

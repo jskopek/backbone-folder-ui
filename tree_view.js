@@ -3,8 +3,11 @@ var MIView = Backbone.View.extend({
     tagName: "li",
 
     initialize: function() {
-        this.render();
         this.model.bind("change:status", this.render, this);
+
+        $(this.el).attr("id", "mi_" + this.model.cid);
+        $(this.el).data("model", this.model);
+        this.render();
     },
     events: {
         "click a": "change_status",
@@ -16,7 +19,6 @@ var MIView = Backbone.View.extend({
     render: function() {
         console.log("rendering item", this.model.cid);
 
-        $(this.el).attr("id", "mi_" + this.model.cid);
         
         var template = _.template("<div><b>MI: <%= cid %>: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>");
         $(this.el).html( template({
@@ -50,6 +52,8 @@ var FolderView = Backbone.View.extend({
         this.model.get("children").bind("remove", this.render_items, this);
         this.model.get("children").bind("move", this.render_items, this);
 
+        $(this.el).attr("id", "folder_" + this.model.cid);
+        $(this.el).data("model", this.model);
         this.render();
     },
     toggle_hide: function(e) {
@@ -60,7 +64,6 @@ var FolderView = Backbone.View.extend({
     render: function() {
         console.log("rendering folder", this.model.cid);
 
-        $(this.el).attr("id", "folder_" + this.model.cid);
         $(this.el).html( this.template() );
 
         this.render_details();
@@ -108,6 +111,9 @@ var TreeView = FolderView.extend({
 
         //set sorting and bind for property updates
         this.model.bind("change:sortable", this.set_sorting, this);
+    },
+    render: function() {
+        FolderView.prototype.render.call(this);
         this.set_sorting();
     },
     set_sorting: function() {
@@ -116,6 +122,7 @@ var TreeView = FolderView.extend({
             return true;
         }
 
+        var tree_view = this;
         $(this.el).children("ol").nestedSortable({
             disableNesting: 'module_item',
             forcePlaceholderSize: true,
@@ -129,45 +136,36 @@ var TreeView = FolderView.extend({
             tabSize: 25,
             tolerance: 'pointer',
             toleranceElement: '> div',
-            revertOnError: 0
-        });
-        $(this.el).find("ol").bind("sortupdate", $.proxy(function(e) {
-            var el = $(this.el).find("ol");
-            var model = this.model;
+            revertOnError: 0,
 
-            var update_order = function(data) {
-                var parent_folder = this.model.get_item_by_id( data["id"] );
+            start: function(event, ui) {
+                var start_pos = ui.item.index();
+                ui.item.data('start_pos', start_pos);
 
-                for( var position in data["children"] ) {
-                    var child_data = data["children"][position];
-                    var child_item = this.model.get_item_by_id( child_data["id"] );
+                var start_parent = ui.item.parent("ol").parent("li").data("model");
+                if( !start_parent ) { start_parent = tree_view.model; }
+                ui.item.data('start_parent', start_parent);
+            },
+            update: function(event, ui) {
+                var item = ui.item.data("model");
 
-                    //set the position of the item
-                    if( parent_folder.cid != child_item.get("parent").cid ) {
-                        child_item.get("parent").remove( child_item );
-                        parent_folder.add(child_item, position);
-                    } else {
-                        parent_folder.move(child_item, position);
-                    }
+                var end_parent = ui.item.parent("ol").parent("li").data("model");
+                if( !end_parent ) { end_parent = tree_view.model; }
+                var start_parent = ui.item.data('start_parent');
 
-                    //if the item has children, do ordering on them
-                    if( child_data["children"] ) {
-                        update_order.call(this, child_data);
-                    }
+                var start_pos = ui.item.data('start_pos');
+                var end_pos = $(ui.item).index();
+
+                if( start_parent != end_parent ) {
+                    start_parent.remove(item);
+                    end_parent.add(item, end_pos );
+                    console.log("Removing item", item.get("title"), "from", start_parent.get("title"), "adding to", end_parent.get("title"), "at", end_pos);
+                } else if( start_pos != end_pos ) {
+                    start_parent.move(item, end_pos);
+                    console.log("Moving item", item.get('title'), "to position", end_pos, "in parent", start_parent.get("title"));
                 }
             }
-
-            var data = $(el).nestedSortable("toHierarchy");
-
-            //insert the controlling tree as the 'root' parent - first-level
-            //children will set themselves as the children of it, and will
-            //update their positioning accordingly
-            data = {
-                "id": this.model.cid,
-                "children": data
-            };
-            update_order.call(this, data);
-        }, this));
+        });
     }
 
 });
