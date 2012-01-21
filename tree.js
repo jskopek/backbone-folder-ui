@@ -4,7 +4,7 @@ var TreeItem = Backbone.Model.extend({
         this.set({"title": "Item " + this.cid});
     },
     init_view: function() {
-        return new TreeModuleItemView({ "model": this });
+        return new TreeItemView({ "model": this });
     }
 });
 var TreeModuleItem = Backbone.Model.extend({

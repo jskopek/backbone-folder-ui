@@ -1,13 +1,27 @@
-var TreeModuleItemView = Backbone.View.extend({
-    className: "module_item",
+var TreeItemView = Backbone.View.extend({
+    className: "item",
     tagName: "li",
+    template: _.template("<div><b><%= title %></b></div>"),
 
     initialize: function() {
-        this.model.bind("change:status", this.render, this);
-
         $(this.el).attr("id", "mi_" + this.model.cid);
         $(this.el).data("model", this.model);
         this.render();
+    },
+    render: function() {
+        console.log("rendering item", this.model.cid);
+        var html = this.template( this.model.toJSON() );
+        $(this.el).html(html);
+        this.delegateEvents();
+    }
+});
+var TreeModuleItemView = TreeItemView.extend({
+    className: "module_item",
+    template: _.template("<div><b>MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>"),
+
+    initialize: function() {
+        TreeItemView.prototype.initialize.call(this);
+        this.model.bind("change:status", this.render, this);
     },
     events: {
         "click a": "change_status",
@@ -15,21 +29,8 @@ var TreeModuleItemView = Backbone.View.extend({
     change_status: function(e) {
         e.preventDefault();
         this.model.change_status();
-    },
-    render: function() {
-        console.log("rendering item", this.model.cid);
-
-        
-        var template = _.template("<div><b>MI: <%= cid %>: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>");
-        $(this.el).html( template({
-            "cid": this.model.cid,
-            "title": this.model.get("title"),
-            "status": this.model.get("status")
-        }) );
-
-        this.delegateEvents();
     }
-})
+});
 
 var FolderView = Backbone.View.extend({
     tagName: "li",
