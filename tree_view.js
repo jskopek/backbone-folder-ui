@@ -40,6 +40,8 @@ var FolderView = Backbone.View.extend({
         this.model.bind("change:title", this.render_details, this);
 
         //create and remove item views when items are added to the folder
+        //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
+        //views if the child model is ever removed from the folder
         this.model.get("children").bind("add", function(item) { this.children_views[item.cid] = item.init_view(); }, this);
         this.model.get("children").bind("remove", function(item) { delete this.children_views[item.cid]; }, this);
         this.model.get("children").each(function(item) { this.children_views[item.cid] = item.init_view(); }, this);
@@ -75,9 +77,15 @@ var FolderView = Backbone.View.extend({
         $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
     },
     render_items: function() {
-        //loop through and add children
-        var ol_el = $(this.el).children(".folder_items");
-        ol_el.html("");
+        //get the list that we will be putting our children into
+        var ol_el = $(this.el).children("ol.folder_items");
+
+        //if there are any child elements in the folder, do a jQuery detach on them first before wiping the html
+        //of the list; this will preserve any events that were bound on the child views els
+        $(ol_el).children("li").detach();
+
+        //wipe the list
+        $(ol_el).html("");
 
         if( this.model.get("hidden") ) {
             return true;
@@ -85,7 +93,7 @@ var FolderView = Backbone.View.extend({
 
         this.model.get("children").each(function(child) {
             var view = this.children_views[child.cid]; //get the view from the dictionary of views
-            ol_el.append(view.el );
+            ol_el.append( view.el );
         }, this);
 
     }

@@ -47,6 +47,10 @@
                 };
                 tree = new Tree(data);
                 var fview = new TreeView({"model": tree});
+
+                //tree = new Folder(data);
+                //var fview = new FolderView({"model": tree});
+
                 $("#tree").html(fview.el);
 
                 f1 = tree.get_item_by_id("c2");
