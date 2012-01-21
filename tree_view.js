@@ -44,9 +44,9 @@ var FolderView = Backbone.View.extend({
         this.model.get("children").bind("remove", function(item) { delete this.children_views[item.cid]; }, this);
         this.model.get("children").each(function(item) { this.children_views[item.cid] = item.init_view(); }, this);
 
-        this.model.get("children").bind("add", this.render, this);
-        this.model.get("children").bind("remove", this.render, this);
-        this.model.get("children").bind("move", this.render, this);
+        this.model.get("children").bind("add", this.render_items, this);
+        this.model.get("children").bind("remove", this.render_items, this);
+        this.model.get("children").bind("move", this.render_items, this);
 
         this.render();
     },
@@ -76,7 +76,7 @@ var FolderView = Backbone.View.extend({
     },
     render_items: function() {
         //loop through and add children
-        var ol_el = $(this.el).find(".folder_items");
+        var ol_el = $(this.el).children(".folder_items");
         ol_el.html("");
 
         if( this.model.get("hidden") ) {
