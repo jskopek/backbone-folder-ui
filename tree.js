@@ -1,6 +1,8 @@
 var TreeItem = Backbone.Model.extend({
     defaults: {
-        onClick: false //optional function that is called when item clicked
+        onClick: false, //optional function that is called when item clicked
+        selectable: false,
+        selected: false
     },
     initialize: function() {
         //temp way of setting MI name really quickly
@@ -17,16 +19,8 @@ var TreeItem = Backbone.Model.extend({
         return new TreeItemView({ "model": this });
     }
 });
-var TreeSelectItem = TreeItem.extend({
+var TreeModuleItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
-        selected: false
-    }),
-    init_view: function() {
-        return new TreeSelectItemView({ "model": this });
-    }
-});
-var TreeModuleItem = TreeSelectItem.extend({
-    defaults: _.extend({}, TreeSelectItem.prototype.defaults, {
         status: "inactive",
         item: undefined
     }),
@@ -34,7 +28,7 @@ var TreeModuleItem = TreeSelectItem.extend({
         return new TreeModuleItemView({ "model": this });
     },
     initialize: function() {
-        TreeSelectItem.prototype.initialize.call(this);
+        TreeItem.prototype.initialize.call(this);
 
         if( !this.get("module_item") ) {
             throw("MI cannot be initialized without `module_item` property");

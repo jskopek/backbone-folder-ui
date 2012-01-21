@@ -1,15 +1,25 @@
 var TreeItemView = Backbone.View.extend({
     className: "item",
     tagName: "li",
-    template: _.template("<div><b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
+    template: _.template("<div>" +
+        "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
+        "<b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
         $(this.el).data("model", this.model);
+
+        this.model.bind("change:selectable", this.render, this);
+        this.model.bind("change:selected", this.render, this);
         this.render();
     },
     events: {
-        "click b": "clicked"
+        "click b": "clicked",
+        "click input[type=checkbox]": "toggle_select"
+    },
+    toggle_select: function(e) {
+        var is_selected = $(e.currentTarget).is(":checked");
+        this.model.set({"selected": is_selected});
     },
     clicked: function() {
         this.model.trigger("clicked");
@@ -21,39 +31,18 @@ var TreeItemView = Backbone.View.extend({
         this.delegateEvents();
     }
 });
-var TreeSelectItemView = TreeItemView.extend({
-    initialize: function() {
-        TreeItemView.prototype.initialize.call(this);
-        this.model.bind("change:selected", this.render_status, this);
-    },
-    render: function() {
-        TreeItemView.prototype.render.call(this);
-        this.render_select();
-    },
-    render_select: function() {
-        var el = $(this.el).find("div span.select");
-        if( !el.length ) {
-            el = $("<span class='select'></span");
-            $(this.el).find("div").prepend( el );
-        }
-
-        var template = _.template("<input type='checkbox' <% if( selected ) { %>checked<% } %> />");
-        var html = template( this.model.toJSON() );
-        $(el).html(html);
-    }
-});
-var TreeModuleItemView = TreeSelectItemView.extend({
+var TreeModuleItemView = TreeItemView.extend({
     className: "module_item",
 
     initialize: function() {
-        TreeSelectItemView.prototype.initialize.call(this);
+        TreeItemView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render_status, this);
     },
     events: _.extend({},TreeItemView.prototype.events, {
         "click a": "change_status",
     }),
     render: function() {
-        TreeSelectItemView.prototype.render.call(this);
+        TreeItemView.prototype.render.call(this);
         this.render_status();
         this.delegateEvents();
     },
