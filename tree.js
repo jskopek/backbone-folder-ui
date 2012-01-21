@@ -22,6 +22,7 @@ var TreeItem = Backbone.Model.extend({
 var TreeModuleItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
         status: "inactive",
+        selectable: true,
         item: undefined
     }),
     init_view: function() {
