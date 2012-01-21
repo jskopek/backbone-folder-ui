@@ -1,19 +1,19 @@
-var Item = Backbone.Model.extend({
+var TreeItem = Backbone.Model.extend({
     initialize: function() {
         //temp way of setting MI name really quickly
         this.set({"title": "Item " + this.cid});
     },
     init_view: function() {
-        return new MIView({ "model": this });
+        return new TreeModuleItemView({ "model": this });
     }
 });
-var MI = Backbone.Model.extend({
+var TreeModuleItem = Backbone.Model.extend({
     defaults: {
         status: "inactive",
         item: undefined
     },
     init_view: function() {
-        return new MIView({ "model": this });
+        return new TreeModuleItemView({ "model": this });
     },
     initialize: function() {
         if( !this.get("module_item") ) {

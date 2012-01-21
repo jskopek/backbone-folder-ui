@@ -1,4 +1,4 @@
-var MIView = Backbone.View.extend({
+var TreeModuleItemView = Backbone.View.extend({
     className: "module_item",
     tagName: "li",
 

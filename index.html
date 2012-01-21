@@ -25,24 +25,24 @@
                     "children": [
                         new StatusFolder({
                             "title": "Folder 1",
-                            "children": [new MI({"module_item":mi}), new Item()]
+                            "children": [new TreeModuleItem({"module_item":mi}), new TreeItem()]
                         }),
                         new Folder({
                             "title": "Folder 2",
                             "children": [
                                 new Folder({
                                     "title": "Folder 3",
-                                    "children": [new Item(), new Item(), new MI({"module_item":mi})]
+                                    "children": [new TreeItem(), new TreeItem(), new TreeModuleItem({"module_item":mi})]
                                 }),
-                                new MI({"module_item":mi})
+                                new TreeModuleItem({"module_item":mi})
                             ]
                         }),
-                        new MI({"module_item":mi})
+                        new TreeModuleItem({"module_item":mi})
                     ]
                 };
                 var data_new = {
                     "sortable": true,
-                    "children": [new MI({"module_item":mi}), new MI({"module_item":mi}), new MI({"module_item":mi}), new MI({"module_item":mi})]
+                    "children": [new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi})]
                 };
                 var data_folders = {
                     "sortable": true,
