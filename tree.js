@@ -1,16 +1,37 @@
-var MIcounter = 0;
-
+var Item = Backbone.Model.extend({
+    initialize: function() {
+        //temp way of setting MI name really quickly
+        this.set({"title": "Item " + this.cid});
+    },
+    init_view: function() {
+        return new MIView({ "model": this });
+    }
+});
 var MI = Backbone.Model.extend({
     defaults: {
-        status: "inactive"
+        status: "inactive",
+        item: undefined
     },
     init_view: function() {
         return new MIView({ "model": this });
     },
     initialize: function() {
-        //temp way of setting MI name really quickly
-        this.set({"title": "Module Item " + MIcounter});
-        MIcounter++;
+        if( !this.get("module_item") ) {
+            throw("MI cannot be initialized without `module_item` property");
+        }
+
+        this.set({ "title": this.get("module_item").get("title") });
+
+        //set status to module_item's status, and bind for MI's status changes
+        this.set({"status": this.get("module_item").get("status") });
+        this.get("module_item").bind("change:status", function() {
+            this.set({"status": this.get("module_item").get("status")});
+        }, this);
+
+        //update MI's status when this status is changed
+        this.bind("change:status", function() {
+            this.get("module_item").set({"status": this.get("status")});
+        }, this);
     },
     change_status: function() {
         var status = next_status( this.get("status") );
