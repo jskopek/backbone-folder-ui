@@ -17,8 +17,16 @@ var TreeItem = Backbone.Model.extend({
         return new TreeItemView({ "model": this });
     }
 });
-var TreeModuleItem = TreeItem.extend({
+var TreeSelectItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
+        selected: false
+    }),
+    init_view: function() {
+        return new TreeSelectItemView({ "model": this });
+    }
+});
+var TreeModuleItem = TreeSelectItem.extend({
+    defaults: _.extend({}, TreeSelectItem.prototype.defaults, {
         status: "inactive",
         item: undefined
     }),
@@ -26,7 +34,7 @@ var TreeModuleItem = TreeItem.extend({
         return new TreeModuleItemView({ "model": this });
     },
     initialize: function() {
-        TreeItem.prototype.initialize.call(this);
+        TreeSelectItem.prototype.initialize.call(this);
 
         if( !this.get("module_item") ) {
             throw("MI cannot be initialized without `module_item` property");
@@ -108,7 +116,6 @@ var Folder = Backbone.Model.extend({
     }
 
 });
-
 
 // TREE MODEL & VIEW ///
 var Tree = Folder.extend({

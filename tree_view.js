@@ -21,17 +21,53 @@ var TreeItemView = Backbone.View.extend({
         this.delegateEvents();
     }
 });
-var TreeModuleItemView = TreeItemView.extend({
-    className: "module_item",
-    template: _.template("<div><b >MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>"),
-
+var TreeSelectItemView = TreeItemView.extend({
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
-        this.model.bind("change:status", this.render, this);
+        this.model.bind("change:selected", this.render_status, this);
+    },
+    render: function() {
+        TreeItemView.prototype.render.call(this);
+        this.render_select();
+    },
+    render_select: function() {
+        var el = $(this.el).find("div span.select");
+        if( !el.length ) {
+            el = $("<span class='select'></span");
+            $(this.el).find("div").prepend( el );
+        }
+
+        var template = _.template("<input type='checkbox' <% if( selected ) { %>checked<% } %> />");
+        var html = template( this.model.toJSON() );
+        $(el).html(html);
+    }
+});
+var TreeModuleItemView = TreeSelectItemView.extend({
+    className: "module_item",
+
+    initialize: function() {
+        TreeSelectItemView.prototype.initialize.call(this);
+        this.model.bind("change:status", this.render_status, this);
     },
     events: _.extend({},TreeItemView.prototype.events, {
         "click a": "change_status",
     }),
+    render: function() {
+        TreeSelectItemView.prototype.render.call(this);
+        this.render_status();
+        this.delegateEvents();
+    },
+    render_status: function() {
+        var el = $(this.el).find("div span.status");
+        if( !el.length ) {
+            el = $("<span class='status'></span");
+            $(this.el).find("div").append( el );
+        }
+
+        var template = _.template("Status: <%= status %>, <a href='#'>Change Status</a>");
+        var html = template( this.model.toJSON() );
+        $(el).html(html);
+    },
     change_status: function(e) {
         e.preventDefault();
         this.model.change_status();
