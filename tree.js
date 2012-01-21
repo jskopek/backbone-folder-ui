@@ -1,16 +1,49 @@
-var MIcounter = 0;
-
-var MI = Backbone.Model.extend({
+var TreeItem = Backbone.Model.extend({
     defaults: {
-        status: "inactive"
-    },
-    init_view: function() {
-        return new MIView({ "model": this });
+        onClick: false //optional function that is called when item clicked
     },
     initialize: function() {
         //temp way of setting MI name really quickly
-        this.set({"title": "Module Item " + MIcounter});
-        MIcounter++;
+        this.set({"title": "Item " + this.cid});
+
+        this.bind("clicked", function() {
+            console.log("clicked");
+            if( typeof( this.get("onClick") ) == "function" ) {
+                this.get("onClick").call(this);
+            }
+        });
+    },
+    init_view: function() {
+        return new TreeItemView({ "model": this });
+    }
+});
+var TreeModuleItem = TreeItem.extend({
+    defaults: _.extend({}, TreeItem.prototype.defaults, {
+        status: "inactive",
+        item: undefined
+    }),
+    init_view: function() {
+        return new TreeModuleItemView({ "model": this });
+    },
+    initialize: function() {
+        TreeItem.prototype.initialize.call(this);
+
+        if( !this.get("module_item") ) {
+            throw("MI cannot be initialized without `module_item` property");
+        }
+
+        this.set({ "title": this.get("module_item").get("title") });
+
+        //set status to module_item's status, and bind for MI's status changes
+        this.set({"status": this.get("module_item").get("status") });
+        this.get("module_item").bind("change:status", function() {
+            this.set({"status": this.get("module_item").get("status")});
+        }, this);
+
+        //update MI's status when this status is changed
+        this.bind("change:status", function() {
+            this.get("module_item").set({"status": this.get("status")});
+        }, this);
     },
     change_status: function() {
         var status = next_status( this.get("status") );
@@ -88,7 +121,7 @@ var Tree = Folder.extend({
 
 ////// STATUS STUFF //////
 var StatusFolder = Folder.extend({
-    defaults: $.extend({}, Folder.prototype.defaults, {
+    defaults: _.extend({}, Folder.prototype.defaults, {
         status: undefined
     }),
     init_view: function() {

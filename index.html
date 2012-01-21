@@ -17,29 +17,32 @@
         <script type="text/javascript">
             var list;
             $(document).ready(function() {
+                var mi_type = Backbone.Model.extend({});
+                var mi = new mi_type({ "title": "Module Item 1", "status": "active_visible" });
+
                 var data = {
                     "sortable": true,
                     "children": [
                         new StatusFolder({
                             "title": "Folder 1",
-                            "children": [new MI(), new MI()]
+                            "children": [new TreeModuleItem({"module_item":mi}), new TreeItem({onClick:function() { alert("HELLO"); }})]
                         }),
                         new Folder({
                             "title": "Folder 2",
                             "children": [
                                 new Folder({
                                     "title": "Folder 3",
-                                    "children": [new MI(), new MI(), new MI()]
+                                    "children": [new TreeItem(), new TreeItem(), new TreeModuleItem({"module_item":mi})]
                                 }),
-                                new MI()
+                                new TreeModuleItem({"module_item":mi})
                             ]
                         }),
-                        new MI()
+                        new TreeModuleItem({"module_item":mi})
                     ]
                 };
                 var data_new = {
                     "sortable": true,
-                    "children": [new MI(), new MI(), new MI(), new MI()]
+                    "children": [new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi})]
                 };
                 var data_folders = {
                     "sortable": true,
@@ -53,15 +56,15 @@
 
                 $("#tree").html(fview.el);
 
-                f1 = tree.get_item_by_id("c2");
-                f2 = tree.get_item_by_id("c8");
-                f3 = tree.get_item_by_id("c6");
-                m1 = f1.get_item_by_id("c1");
-                m2 = f1.get_item_by_id("c3");
-                m3 = f1.get_item_by_id("c4");
-                m4 = tree.get_item_by_id("c5");
-                m5 = tree.get_item_by_id("c7");
-                m6 = tree.get_item_by_id("c9");
+                //f1 = tree.get_item_by_id("c2");
+                //f2 = tree.get_item_by_id("c8");
+                //f3 = tree.get_item_by_id("c6");
+                //m1 = f1.get_item_by_id("c1");
+                //m2 = f1.get_item_by_id("c3");
+                //m3 = f1.get_item_by_id("c4");
+                //m4 = tree.get_item_by_id("c5");
+                //m5 = tree.get_item_by_id("c7");
+                //m6 = tree.get_item_by_id("c9");
             });
 
         </script>
