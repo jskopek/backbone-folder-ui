@@ -1,12 +1,18 @@
 var TreeItemView = Backbone.View.extend({
     className: "item",
     tagName: "li",
-    template: _.template("<div><b><%= title %></b></div>"),
+    template: _.template("<div><b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
         $(this.el).data("model", this.model);
         this.render();
+    },
+    events: {
+        "click b": "clicked"
+    },
+    clicked: function() {
+        this.model.trigger("clicked");
     },
     render: function() {
         console.log("rendering item", this.model.cid);
@@ -17,15 +23,15 @@ var TreeItemView = Backbone.View.extend({
 });
 var TreeModuleItemView = TreeItemView.extend({
     className: "module_item",
-    template: _.template("<div><b>MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>"),
+    template: _.template("<div><b >MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>"),
 
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render, this);
     },
-    events: {
+    events: _.extend({},TreeItemView.prototype.events, {
         "click a": "change_status",
-    },
+    }),
     change_status: function(e) {
         e.preventDefault();
         this.model.change_status();

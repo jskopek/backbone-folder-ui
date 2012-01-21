@@ -25,7 +25,7 @@
                     "children": [
                         new StatusFolder({
                             "title": "Folder 1",
-                            "children": [new TreeModuleItem({"module_item":mi}), new TreeItem()]
+                            "children": [new TreeModuleItem({"module_item":mi}), new TreeItem({onClick:function() { alert("HELLO"); }})]
                         }),
                         new Folder({
                             "title": "Folder 2",

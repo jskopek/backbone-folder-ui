@@ -1,21 +1,33 @@
 var TreeItem = Backbone.Model.extend({
+    defaults: {
+        onClick: false //optional function that is called when item clicked
+    },
     initialize: function() {
         //temp way of setting MI name really quickly
         this.set({"title": "Item " + this.cid});
+
+        this.bind("clicked", function() {
+            console.log("clicked");
+            if( typeof( this.get("onClick") ) == "function" ) {
+                this.get("onClick").call(this);
+            }
+        });
     },
     init_view: function() {
         return new TreeItemView({ "model": this });
     }
 });
-var TreeModuleItem = Backbone.Model.extend({
-    defaults: {
+var TreeModuleItem = TreeItem.extend({
+    defaults: _.extend({}, TreeItem.prototype.defaults, {
         status: "inactive",
         item: undefined
-    },
+    }),
     init_view: function() {
         return new TreeModuleItemView({ "model": this });
     },
     initialize: function() {
+        TreeItem.prototype.initialize.call(this);
+
         if( !this.get("module_item") ) {
             throw("MI cannot be initialized without `module_item` property");
         }
@@ -109,7 +121,7 @@ var Tree = Folder.extend({
 
 ////// STATUS STUFF //////
 var StatusFolder = Folder.extend({
-    defaults: $.extend({}, Folder.prototype.defaults, {
+    defaults: _.extend({}, Folder.prototype.defaults, {
         status: undefined
     }),
     init_view: function() {
