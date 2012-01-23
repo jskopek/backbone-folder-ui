@@ -26,6 +26,15 @@ ol li div {
 	background: #fff;
 }
 
+/* 
+hide children of a hidden folder, but do not hide the
+list itself - this allows us to hover over and drop items into
+hidden folders
+*/
+ol.hidden > li {
+	display: none;
+}
+
 ol > li.placeholder.ui-nestedSortable-error { margin-left: 0px; }
 
 ol > li li.placeholder,

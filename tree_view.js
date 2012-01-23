@@ -39,9 +39,12 @@ var FolderView = Backbone.View.extend({
     children_views: {},
 
     initialize: function() {
-        this.model.bind("change:hidden", this.render_items, this);
         this.model.bind("change:title", this.render_details, this);
         this.model.bind("change:selected", this.render_details, this);
+
+        //when folder hidden or shown, update both the items below, as well as the hide/show button in the details pane
+        this.model.bind("change:hidden", this.render_items, this);
+        this.model.bind("change:hidden", this.render_details, this);
 
         //create and remove item views when items are added to the folder
         //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
@@ -80,11 +83,12 @@ var FolderView = Backbone.View.extend({
         /*if( this.model.cid == "c7" ) { debugger; }*/
         var html = _.template(
                 "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
-                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", 
+                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'><% if( hidden ) { %>Show<% } else { %>Hide<% } %></a>", 
                 {
                     "cid": this.model.cid,
                     "selectable": this.model.get("selectable"),
                     "selected": this.model.get("selected"),
+                    "hidden": this.model.get("hidden"),
                     "title": this.model.get("title")
                 });
         $(this.el).children(".folder_details").html(html);
@@ -108,12 +112,12 @@ var FolderView = Backbone.View.extend({
 
         //hide the list if the folder is hidden, then do nothing else
         if( this.model.get("hidden") ) {
-            $(ol_el).css("display", "none");
+            $(ol_el).addClass("hidden");
             return true;
         }
 
         //show otherwise
-        $(ol_el).css("display", "inherit");
+        $(ol_el).removeClass("hidden");
 
         //if there are any child elements in the folder, do a jQuery detach on them first before wiping the html
         //of the list; this will preserve any events that were bound on the child views els
@@ -195,10 +199,13 @@ var TreeView = FolderView.extend({
                 if( start_parent != end_parent ) {
                     start_parent.remove(item);
                     end_parent.add(item, end_pos );
-                    console.log("Removing item", item.get("title"), "from", start_parent.get("title"), "adding to", end_parent.get("title"), "at", end_pos);
+
+                    //if we are moving a child into a hidden folder, mark the folder as opened on drop
+                    if( end_parent.get("hidden") ) {
+                       end_parent.set({"hidden": false}); 
+                    }
                 } else if( start_pos != end_pos ) {
                     start_parent.move(item, end_pos);
-                    console.log("Moving item", item.get('title'), "to position", end_pos, "in parent", start_parent.get("title"));
                 }
             }
         });
