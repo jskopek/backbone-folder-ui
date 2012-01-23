@@ -1,15 +1,25 @@
 var TreeItemView = Backbone.View.extend({
-    className: "item",
+    className: "item no_tree_children",
     tagName: "li",
-    template: _.template("<div><b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
+    template: _.template("<div>" +
+        "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
+        "<b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
         $(this.el).data("model", this.model);
+
+        this.model.bind("change:selectable", this.render, this);
+        this.model.bind("change:selected", this.render, this);
         this.render();
     },
     events: {
-        "click b": "clicked"
+        "click b": "clicked",
+        "click input[type=checkbox]": "toggle_select"
+    },
+    toggle_select: function(e) {
+        var is_selected = $(e.currentTarget).is(":checked");
+        this.model.set({"selected": is_selected});
     },
     clicked: function() {
         this.model.trigger("clicked");
@@ -22,16 +32,31 @@ var TreeItemView = Backbone.View.extend({
     }
 });
 var TreeModuleItemView = TreeItemView.extend({
-    className: "module_item",
-    template: _.template("<div><b >MI: <%= title %>, Status: <%= status %>, <a href='#'>Change Status</a></b></div>"),
+    className: "module_item no_tree_children",
 
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
-        this.model.bind("change:status", this.render, this);
+        this.model.bind("change:status", this.render_status, this);
     },
     events: _.extend({},TreeItemView.prototype.events, {
         "click a": "change_status",
     }),
+    render: function() {
+        TreeItemView.prototype.render.call(this);
+        this.render_status();
+        this.delegateEvents();
+    },
+    render_status: function() {
+        var el = $(this.el).find("div span.status");
+        if( !el.length ) {
+            el = $("<span class='status'></span");
+            $(this.el).find("div").append( el );
+        }
+
+        var template = _.template("Status: <%= status %>, <a href='#'>Change Status</a>");
+        var html = template( this.model.toJSON() );
+        $(el).html(html);
+    },
     change_status: function(e) {
         e.preventDefault();
         this.model.change_status();
@@ -47,6 +72,7 @@ var FolderView = Backbone.View.extend({
     initialize: function() {
         this.model.bind("change:hidden", this.render_items, this);
         this.model.bind("change:title", this.render_details, this);
+        this.model.bind("change:selected", this.render_details, this);
 
         //create and remove item views when items are added to the folder
         //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
@@ -77,14 +103,30 @@ var FolderView = Backbone.View.extend({
         this.render_items();
     },
     render_details: function() {
-        var html = _.template("<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", {
-            "cid": this.model.cid,
-            "title": this.model.get("title")
-        });
-        $(this.el).find(".folder_details").html(html);
+        /*if( this.model.cid == "c7" ) { debugger; }*/
+        var html = _.template(
+                "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
+                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", 
+                {
+                    "cid": this.model.cid,
+                    "selectable": this.model.get("selectable"),
+                    "selected": this.model.get("selected"),
+                    "title": this.model.get("title")
+                });
+        $(this.el).children(".folder_details").html(html);
+
+        //set the 'indeterminate' property for the selected checkbox if it is mixed
+        //this can only be done in JS
+        if( this.model.get("selected") == "mixed" ) {
+            $(this.el).children(".folder_details").find("input[type=checkbox]").prop("indeterminate", true);
+        }
 
         //bind hide event
         $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).children(".folder_details").find("input[type=checkbox]").click($.proxy(function(e) { 
+            var is_selected = $(e.currentTarget).is(":checked");
+            this.model.set({"selected": is_selected});
+        }, this));
     },
     render_items: function() {
         //get the list that we will be putting our children into
@@ -131,7 +173,7 @@ var TreeView = FolderView.extend({
 
         var tree_view = this;
         $(this.el).children("ol").nestedSortable({
-            disableNesting: 'module_item',
+            disableNesting: 'no_tree_children',
             forcePlaceholderSize: true,
             handle: 'div',
             helper:	'clone',
