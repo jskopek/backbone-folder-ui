@@ -83,7 +83,6 @@ var FolderView = Backbone.View.extend({
 
         this.model.get("children").bind("add", this.render_items, this);
         this.model.get("children").bind("remove", this.render_items, this);
-        this.model.get("children").bind("move", this.render_items, this);
 
         $(this.el).attr("id", "folder_" + this.model.cid);
         $(this.el).data("model", this.model);
@@ -132,22 +131,25 @@ var FolderView = Backbone.View.extend({
         //get the list that we will be putting our children into
         var ol_el = $(this.el).children("ol.folder_items");
 
-        //if there are any child elements in the folder, do a jQuery detach on them first before wiping the html
-        //of the list; this will preserve any events that were bound on the child views els
-        $(ol_el).children("li").detach();
-
-        //wipe the list
-        $(ol_el).html("");
-
+        //hide the list if the folder is hidden, then do nothing else
         if( this.model.get("hidden") ) {
+            $(ol_el).css("display", "none");
             return true;
         }
 
+        //show otherwise
+        $(ol_el).css("display", "inherit");
+
+        //if there are any child elements in the folder, do a jQuery detach on them first before wiping the html
+        //of the list; this will preserve any events that were bound on the child views els
+        $(ol_el).children("li").detach();
+        $(ol_el).html("");
+
+        //re-insert each children's view
         this.model.get("children").each(function(child) {
-            var view = this.children_views[child.cid]; //get the view from the dictionary of views
+            var view = this.children_views[child.cid];
             ol_el.append( view.el );
         }, this);
-
     }
 });
 
