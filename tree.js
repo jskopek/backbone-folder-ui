@@ -23,6 +23,7 @@ var TreeModuleItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
         status: "inactive",
         selectable: true,
+        answered: false,
         item: undefined
     }),
     init_view: function() {
@@ -43,6 +44,12 @@ var TreeModuleItem = TreeItem.extend({
             this.set({"status": this.get("module_item").get("status")});
         }, this);
 
+        //set answered state to module_item's states, and bind for MI's answered changes
+        this.set({"answered": this.get("module_item").get("answered") });
+        this.get("module_item").bind("change:answered", function() {
+            this.set({"answered": this.get("module_item").get("answered")});
+        }, this);
+
         //update MI's status when this status is changed
         this.bind("change:status", function() {
             this.get("module_item").set({"status": this.get("status")});
@@ -61,9 +68,6 @@ var Folder = Backbone.Model.extend({
         hidden: false,
         selectable: true,
         selected: false
-    },
-    get_item_by_id: function(cid) {
-        return this.flatten().detect(function(item) { return item.cid == cid; });
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
@@ -131,6 +135,9 @@ var Folder = Backbone.Model.extend({
         var children_arr = this.get("children").models;
         children_arr.splice(to,0, children_arr.splice(from,1)[0]);
         this.get("children").trigger("move");
+    },
+    get_item_by_id: function(cid) {
+        return this.flatten().detect(function(item) { return item.cid == cid; });
     },
     flatten: function(exclude_folders) {
         //collections are like arrays, but with nice build-in methods

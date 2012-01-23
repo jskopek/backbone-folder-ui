@@ -37,14 +37,32 @@ var TreeModuleItemView = TreeItemView.extend({
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render_status, this);
+        this.model.bind("change:answered", this.render_answered, this);
     },
     events: _.extend({},TreeItemView.prototype.events, {
         "click a": "change_status",
     }),
     render: function() {
         TreeItemView.prototype.render.call(this);
+
+        this.render_answered();
         this.render_status();
+
         this.delegateEvents();
+    },
+    render_answered: function() {
+        var el = $(this.el).find("div span.answered");
+        if( !el.length ) {
+            el = $("<span class='answered'></span");
+            $(this.el).find("div").append( el );
+        }
+
+        //update answered property
+        if( this.model.get("answered") ) {
+            el.html("Answered!");
+        } else {
+            el.html("Unanswered");
+        }
     },
     render_status: function() {
         var el = $(this.el).find("div span.status");
