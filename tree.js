@@ -2,7 +2,8 @@ var TreeItem = Backbone.Model.extend({
     defaults: {
         onClick: false, //optional function that is called when item clicked
         selectable: false,
-        selected: false
+        selected: false,
+        view_class: TreeItemView
     },
     initialize: function() {
         //temp way of setting MI name really quickly
@@ -15,20 +16,15 @@ var TreeItem = Backbone.Model.extend({
             }
         });
     },
-    init_view: function() {
-        return new TreeItemView({ "model": this });
-    }
 });
 var TreeModuleItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
         status: "inactive",
         selectable: true,
         answered: false,
-        item: undefined
+        item: undefined,
+        view_class: TreeModuleItemView
     }),
-    init_view: function() {
-        return new TreeModuleItemView({ "model": this });
-    },
     initialize: function() {
         TreeItem.prototype.initialize.call(this);
 
@@ -67,7 +63,8 @@ var Folder = Backbone.Model.extend({
         children: new Backbone.Collection(),
         hidden: false,
         selectable: true,
-        selected: false
+        selected: false,
+        view_class: FolderView
     },
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
@@ -115,9 +112,6 @@ var Folder = Backbone.Model.extend({
 
         this.set({"selected": selected });
     },
-    init_view: function() {
-        return new FolderView({"model":this});
-    },
     add: function(item, position) {
         this.get("children").add(item, {at:position});
     },
@@ -159,7 +153,6 @@ var Folder = Backbone.Model.extend({
         add_to_list(this, list);
         return list;
     }
-
 });
 
 // TREE MODEL & VIEW ///
@@ -175,11 +168,9 @@ var Tree = Folder.extend({
 ////// STATUS STUFF //////
 var StatusFolder = Folder.extend({
     defaults: _.extend({}, Folder.prototype.defaults, {
-        status: undefined
+        status: undefined,
+        view_class: StatusFolderView
     }),
-    init_view: function() {
-        return new StatusFolderView({ "model": this });
-    },
     initialize: function() {
         Folder.prototype.initialize.call(this);
 

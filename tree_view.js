@@ -95,9 +95,9 @@ var FolderView = Backbone.View.extend({
         //create and remove item views when items are added to the folder
         //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
         //views if the child model is ever removed from the folder
-        this.model.get("children").bind("add", function(item) { this.children_views[item.cid] = item.init_view(); }, this);
+        this.model.get("children").bind("add", function(item) { this.children_views[item.cid] = this.initialize_item_view(item); }, this);
         this.model.get("children").bind("remove", function(item) { delete this.children_views[item.cid]; }, this);
-        this.model.get("children").each(function(item) { this.children_views[item.cid] = item.init_view(); }, this);
+        this.model.get("children").each(function(item) { var view_class = item.get("view_class"); this.children_views[item.cid] = this.initialize_item_view(item); }, this);
 
         this.model.get("children").bind("add", this.render_items, this);
         this.model.get("children").bind("remove", this.render_items, this);
@@ -105,6 +105,12 @@ var FolderView = Backbone.View.extend({
         $(this.el).attr("id", "folder_" + this.model.cid);
         $(this.el).data("model", this.model);
         this.render();
+    },
+    //our tree is responsible for initializing new views for the items in the tree; each item should have a default class,
+    //stored as the view_class property
+    initialize_item_view: function(item) {
+        var view_class = item.get("view_class");
+        return new view_class({"model": item});
     },
     toggle_hide: function(e) {
         e.preventDefault();
