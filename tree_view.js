@@ -105,7 +105,7 @@ var FolderView = Backbone.View.extend({
     render_details: function() {
         /*if( this.model.cid == "c7" ) { debugger; }*/
         var html = _.template(
-                "<% if( true ) { %><%= selected %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
+                "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
                 "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", 
                 {
                     "cid": this.model.cid,

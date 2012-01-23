@@ -1,7 +1,7 @@
 var TreeItem = Backbone.Model.extend({
     defaults: {
         onClick: false, //optional function that is called when item clicked
-        selectable: true,
+        selectable: false,
         selected: false
     },
     initialize: function() {
