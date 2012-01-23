@@ -70,7 +70,7 @@ var FolderView = Backbone.View.extend({
     children_views: {},
 
     initialize: function() {
-        this.model.bind("change:hidden", this.render_items, this);
+        this.model.bind("change:hidden", this.render, this);
         this.model.bind("change:title", this.render_details, this);
         this.model.bind("change:selected", this.render_details, this);
 
@@ -106,12 +106,13 @@ var FolderView = Backbone.View.extend({
         /*if( this.model.cid == "c7" ) { debugger; }*/
         var html = _.template(
                 "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
-                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", 
+                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'><% if( hidden ) { %>Show<% } else { %>Hide<% } %></a>", 
                 {
                     "cid": this.model.cid,
                     "selectable": this.model.get("selectable"),
                     "selected": this.model.get("selected"),
-                    "title": this.model.get("title")
+                    "title": this.model.get("title"),
+                    "hidden": this.model.get("hidden")
                 });
         $(this.el).children(".folder_details").html(html);
 
@@ -226,16 +227,21 @@ var StatusFolderView = FolderView.extend({
         FolderView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render_details, this);
     },
-    render_details: function() {
-        var html = _.template("<b><%= cid %>: <%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/>", {
-            "cid": this.model.cid,
-            "title": this.model.get("title"),
-            "status": this.model.get("status")
-        });
-        $(this.el).find(".folder_details").html(html);
+    render: function() {
+        FolderView.prototype.render.call(this);
+        /*this.render_status();*/
+    },
+    render_status: function() {
+        var el = $(this.el).children(".folder_details").find("span.status");
+        if( !el.length ) {
+            el = $("<span class='status'></span");
+            $(this.el).children(".folder_details").append( el );
+        }
 
-        //bind hide event
-        $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        var template = _.template("Status: <%= status %>, <a href='#'>Change Status</a>");
+        var html = template( this.model.toJSON() );
+        $(el).html(html);
+
         $(this.el).children(".folder_details").find("a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
     },
     change_status: function(e) {
