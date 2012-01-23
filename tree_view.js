@@ -72,6 +72,7 @@ var FolderView = Backbone.View.extend({
     initialize: function() {
         this.model.bind("change:hidden", this.render_items, this);
         this.model.bind("change:title", this.render_details, this);
+        this.model.bind("change:selected", this.render_details, this);
 
         //create and remove item views when items are added to the folder
         //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
@@ -102,14 +103,30 @@ var FolderView = Backbone.View.extend({
         this.render_items();
     },
     render_details: function() {
-        var html = _.template("<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", {
-            "cid": this.model.cid,
-            "title": this.model.get("title")
-        });
-        $(this.el).find(".folder_details").html(html);
+        /*if( this.model.cid == "c7" ) { debugger; }*/
+        var html = _.template(
+                "<% if( true ) { %><%= selected %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
+                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'>Hide</a>", 
+                {
+                    "cid": this.model.cid,
+                    "selectable": this.model.get("selectable"),
+                    "selected": this.model.get("selected"),
+                    "title": this.model.get("title")
+                });
+        $(this.el).children(".folder_details").html(html);
+
+        //set the 'indeterminate' property for the selected checkbox if it is mixed
+        //this can only be done in JS
+        if( this.model.get("selected") == "mixed" ) {
+            $(this.el).children(".folder_details").find("input[type=checkbox]").prop("indeterminate", true);
+        }
 
         //bind hide event
         $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
+        $(this.el).children(".folder_details").find("input[type=checkbox]").click($.proxy(function(e) { 
+            var is_selected = $(e.currentTarget).is(":checked");
+            this.model.set({"selected": is_selected});
+        }, this));
     },
     render_items: function() {
         //get the list that we will be putting our children into
