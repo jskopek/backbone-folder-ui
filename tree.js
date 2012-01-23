@@ -159,6 +159,7 @@ var Folder = Backbone.Model.extend({
 var Tree = Folder.extend({
     defaults: {
         "sortable": false,
+        "show_select_all": true,
         "children": Backbone.Collection
     }
 });

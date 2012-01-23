@@ -96,7 +96,7 @@ var FolderView = Backbone.View.extend({
     render: function() {
         console.log("rendering folder", this.model.cid);
 
-        $(this.el).html( this.template() );
+        $(this.el).html( this.template( this.model.toJSON() ) );
 
         this.render_details();
         this.render_items();
@@ -156,7 +156,17 @@ var FolderView = Backbone.View.extend({
 var TreeView = FolderView.extend({
     tagName: "div",
     className: "tree",
-    template: _.template("<ol class='folder_items sortable'></ol>"),
+    template: _.template("<% if( show_select_all ) { %><a href='#' class='select_all'>Select All/None</a><% } %>" +
+        "<ol class='folder_items sortable'></ol>"),
+    events: {
+        "click a.select_all": "toggle_select_all"
+    },
+    toggle_select_all: function(e) {
+        e.preventDefault();
+
+        var new_selected = (this.model.get("selected") == true) ? false : true;
+        this.model.set({"selected": new_selected});
+    },
     initialize: function() {
         FolderView.prototype.initialize.call(this);
 
