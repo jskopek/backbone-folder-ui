@@ -47,7 +47,7 @@ var TreeModuleItemView = TreeItemView.extend({
     }
 });
 
-var StatusFolderView = FolderView.extend({
+var ModuleItemFolderView = FolderView.extend({
     initialize: function() {
         FolderView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render_status, this);
@@ -104,10 +104,10 @@ var TreeModuleItem = TreeItem.extend({
     }
 });
 
-var StatusFolder = Folder.extend({
+var ModuleItemFolder = Folder.extend({
     defaults: _.extend({}, Folder.prototype.defaults, {
         status: undefined,
-        view_class: StatusFolderView
+        view_class: ModuleItemFolderView
     }),
     initialize: function() {
         Folder.prototype.initialize.call(this);
