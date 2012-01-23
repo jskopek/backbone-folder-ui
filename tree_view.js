@@ -3,7 +3,7 @@ var TreeItemView = Backbone.View.extend({
     tagName: "li",
     template: _.template("<div>" +
         "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
-        "<b <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></b></div>"),
+        "<em <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></em></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
@@ -14,7 +14,7 @@ var TreeItemView = Backbone.View.extend({
         this.render();
     },
     events: {
-        "click b": "clicked",
+        "click em": "clicked",
         "click input[type=checkbox]": "toggle_select"
     },
     toggle_select: function(e) {
@@ -82,8 +82,9 @@ var FolderView = Backbone.View.extend({
     render_details: function() {
         /*if( this.model.cid == "c7" ) { debugger; }*/
         var html = _.template(
+                "<a href='#' class='toggle_hide'>Toggle Hide</a>" +
                 "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
-                "<b><%= cid %>: <%= title %></b> <a href='#' class='toggle_hide'><% if( hidden ) { %>Show<% } else { %>Hide<% } %></a>", 
+                "<em><span>Folder:</span><%= title %></em>", 
                 {
                     "cid": this.model.cid,
                     "selectable": this.model.get("selectable"),
@@ -92,6 +93,14 @@ var FolderView = Backbone.View.extend({
                     "title": this.model.get("title")
                 });
         $(this.el).children(".folder_details").html(html);
+
+        //add or remove a 'hidden' class to the folder based on it's state
+        if( this.model.get("hidden") ) {
+            $(this.el).addClass("hidden");
+        } else {
+            $(this.el).addClass("hidden");
+        }
+
 
         //set the 'indeterminate' property for the selected checkbox if it is mixed
         //this can only be done in JS
@@ -169,7 +178,7 @@ var TreeView = FolderView.extend({
             handle: 'div',
             helper:	'clone',
             items: 'li',
-            maxLevels: 30,
+            maxLevels: 5,
             opacity: .6,
             placeholder: 'placeholder',
             revert: 250,

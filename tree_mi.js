@@ -7,16 +7,11 @@ var TreeModuleItemView = TreeItemView.extend({
         this.model.bind("change:status", this.render_status, this);
         this.model.bind("change:answered", this.render_answered, this);
     },
-    events: _.extend({},TreeItemView.prototype.events, {
-        "click a": "change_status",
-    }),
     render: function() {
         TreeItemView.prototype.render.call(this);
 
         this.render_answered();
         this.render_status();
-
-        this.delegateEvents();
     },
     render_answered: function() {
         var el = $(this.el).find("div span.answered");
@@ -33,43 +28,41 @@ var TreeModuleItemView = TreeItemView.extend({
         }
     },
     render_status: function() {
-        var el = $(this.el).find("div span.status");
+        var el = $(this.el).children("div").find("span.status");
         if( !el.length ) {
             el = $("<span class='status'></span");
-            $(this.el).find("div").append( el );
+            $(this.el).children("div").append( el );
         }
 
         var template = _.template("Status: <%= status %>, <a href='#'>Change Status</a>");
         var html = template( this.model.toJSON() );
         $(el).html(html);
+
+        $(el).find("a").click($.proxy(this.change_status, this));
     },
     change_status: function(e) {
         e.preventDefault();
-        this.model.change_status();
+        var status = next_status( this.model.get("status") );
+        this.model.set({"status": status });
     }
 });
 
 var StatusFolderView = FolderView.extend({
     initialize: function() {
         FolderView.prototype.initialize.call(this);
-        this.model.bind("change:status", this.render_details, this);
+        this.model.bind("change:status", this.render_status, this);
     },
-    render_details: function() {
-        var html = _.template("<b><%= cid %>: <%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/>", {
-            "cid": this.model.cid,
-            "title": this.model.get("title"),
-            "status": this.model.get("status")
-        });
-        $(this.el).find(".folder_details").html(html);
-
-        //bind hide event
-        $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
-        $(this.el).children(".folder_details").find("a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
+    render: function() {
+        FolderView.prototype.render.call(this);
+        this.render_status();
+    },
+    render_status: function() {
+        TreeModuleItemView.prototype.render_status.call(this);
     },
     change_status: function(e) {
         e.preventDefault();
-        var new_status = next_status( this.model.get("status") );
-        this.model.set({"status": new_status});
+        var status = next_status( this.model.get("status") );
+        this.model.set({"status": status });
     }
 });
 
@@ -108,10 +101,6 @@ var TreeModuleItem = TreeItem.extend({
         this.bind("change:status", function() {
             this.get("module_item").set({"status": this.get("status")});
         }, this);
-    },
-    change_status: function() {
-        var status = next_status( this.get("status") );
-        this.set({"status": status });
     }
 });
 
