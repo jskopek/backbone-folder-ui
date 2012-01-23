@@ -17,45 +17,6 @@ var TreeItem = Backbone.Model.extend({
         });
     },
 });
-var TreeModuleItem = TreeItem.extend({
-    defaults: _.extend({}, TreeItem.prototype.defaults, {
-        status: "inactive",
-        selectable: true,
-        answered: false,
-        item: undefined,
-        view_class: TreeModuleItemView
-    }),
-    initialize: function() {
-        TreeItem.prototype.initialize.call(this);
-
-        if( !this.get("module_item") ) {
-            throw("MI cannot be initialized without `module_item` property");
-        }
-
-        this.set({ "title": this.get("module_item").get("title") });
-
-        //set status to module_item's status, and bind for MI's status changes
-        this.set({"status": this.get("module_item").get("status") });
-        this.get("module_item").bind("change:status", function() {
-            this.set({"status": this.get("module_item").get("status")});
-        }, this);
-
-        //set answered state to module_item's states, and bind for MI's answered changes
-        this.set({"answered": this.get("module_item").get("answered") });
-        this.get("module_item").bind("change:answered", function() {
-            this.set({"answered": this.get("module_item").get("answered")});
-        }, this);
-
-        //update MI's status when this status is changed
-        this.bind("change:status", function() {
-            this.get("module_item").set({"status": this.get("status")});
-        }, this);
-    },
-    change_status: function() {
-        var status = next_status( this.get("status") );
-        this.set({"status": status });
-    }
-});
 
 var Folder = Backbone.Model.extend({
     defaults: {
@@ -163,63 +124,4 @@ var Tree = Folder.extend({
         "children": Backbone.Collection
     }
 });
-
-
-////// STATUS STUFF //////
-var StatusFolder = Folder.extend({
-    defaults: _.extend({}, Folder.prototype.defaults, {
-        status: undefined,
-        view_class: StatusFolderView
-    }),
-    initialize: function() {
-        Folder.prototype.initialize.call(this);
-
-        //update the folder's status based on the status of it's children
-        this.get("children").bind("change:status", this.update_status, this);
-        this.get("children").bind("add", this.update_status, this);
-        this.get("children").bind("remove", this.update_status, this);
-        this.update_status();
-
-        //update the children when the status of the folder is changed
-        this.bind("change:status", function() {
-            var status = this.get("status");
-            if( status == "mixed" ) {
-                return false;
-            }
-            this.get("children").each(function(child) { 
-                child.set({"status": status}); 
-            });
-        }, this);
-
-    },
-    update_status: function() {
-        var statuses = this.get("children").pluck("status");
-        var uniq_status = _.uniq(statuses);
-
-        if( uniq_status.length == 0 ) {
-            var status =  "inactive";
-        } else if( uniq_status.length == 1 ) {
-            var status =  uniq_status[0];
-        } else {
-            var status =  "mixed";
-        }
-
-        this.set({"status": status});
-    }
-});
-
-//helper function for development mode; switches statuses
-function next_status(current_status) {
-    var statuses = ["active_visible", "visible", "active", "review", "inactive"];
-    var status_index = _.indexOf(statuses, current_status);
-    if( status_index == -1 ) {
-        status_index = 0;
-    } else if( status_index >= statuses.length - 1 ) {
-        status_index = 0;
-    } else {
-        status_index++;
-    }
-    return statuses[status_index];
-}
-
 

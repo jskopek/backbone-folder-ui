@@ -31,55 +31,6 @@ var TreeItemView = Backbone.View.extend({
         this.delegateEvents();
     }
 });
-var TreeModuleItemView = TreeItemView.extend({
-    className: "module_item no_tree_children",
-
-    initialize: function() {
-        TreeItemView.prototype.initialize.call(this);
-        this.model.bind("change:status", this.render_status, this);
-        this.model.bind("change:answered", this.render_answered, this);
-    },
-    events: _.extend({},TreeItemView.prototype.events, {
-        "click a": "change_status",
-    }),
-    render: function() {
-        TreeItemView.prototype.render.call(this);
-
-        this.render_answered();
-        this.render_status();
-
-        this.delegateEvents();
-    },
-    render_answered: function() {
-        var el = $(this.el).find("div span.answered");
-        if( !el.length ) {
-            el = $("<span class='answered'></span");
-            $(this.el).find("div").append( el );
-        }
-
-        //update answered property
-        if( this.model.get("answered") ) {
-            el.html("Answered!");
-        } else {
-            el.html("Unanswered");
-        }
-    },
-    render_status: function() {
-        var el = $(this.el).find("div span.status");
-        if( !el.length ) {
-            el = $("<span class='status'></span");
-            $(this.el).find("div").append( el );
-        }
-
-        var template = _.template("Status: <%= status %>, <a href='#'>Change Status</a>");
-        var html = template( this.model.toJSON() );
-        $(el).html(html);
-    },
-    change_status: function(e) {
-        e.preventDefault();
-        this.model.change_status();
-    }
-});
 
 var FolderView = Backbone.View.extend({
     tagName: "li",
@@ -254,30 +205,3 @@ var TreeView = FolderView.extend({
     }
 
 });
-
-///// STATUS STUFF ////
-
-var StatusFolderView = FolderView.extend({
-    initialize: function() {
-        FolderView.prototype.initialize.call(this);
-        this.model.bind("change:status", this.render_details, this);
-    },
-    render_details: function() {
-        var html = _.template("<b><%= cid %>: <%= title %></b> Status: <%= status %><a href='#' class='toggle_hide'>Hide</a><a href='#' class='change_status'>Change Status<a/>", {
-            "cid": this.model.cid,
-            "title": this.model.get("title"),
-            "status": this.model.get("status")
-        });
-        $(this.el).find(".folder_details").html(html);
-
-        //bind hide event
-        $(this.el).children(".folder_details").find("a.toggle_hide").click($.proxy(function(e) { this.toggle_hide(e); }, this));
-        $(this.el).children(".folder_details").find("a.change_status").click($.proxy(function(e) { this.change_status(e); }, this));
-    },
-    change_status: function(e) {
-        e.preventDefault();
-        var new_status = next_status( this.model.get("status") );
-        this.model.set({"status": new_status});
-    }
-});
-
