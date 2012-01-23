@@ -1,5 +1,5 @@
 var TreeItemView = Backbone.View.extend({
-    className: "item",
+    className: "item no_tree_children",
     tagName: "li",
     template: _.template("<div>" +
         "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
@@ -32,7 +32,7 @@ var TreeItemView = Backbone.View.extend({
     }
 });
 var TreeModuleItemView = TreeItemView.extend({
-    className: "module_item",
+    className: "module_item no_tree_children",
 
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
@@ -173,7 +173,7 @@ var TreeView = FolderView.extend({
 
         var tree_view = this;
         $(this.el).children("ol").nestedSortable({
-            disableNesting: 'module_item',
+            disableNesting: 'no_tree_children',
             forcePlaceholderSize: true,
             handle: 'div',
             helper:	'clone',
