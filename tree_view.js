@@ -169,7 +169,7 @@ var TreeView = FolderView.extend({
             opacity: .6,
             placeholder: 'placeholder',
             revert: 250,
-            tabSize: 25,
+            tabSize: 35,
             tolerance: 'pointer',
             toleranceElement: '> div',
             revertOnError: 0,

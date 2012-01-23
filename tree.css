@@ -1,31 +1,67 @@
-/*ol {*/
-/*margin: 0;*/
-/*padding: 0;*/
-/*}*/
-/*ol li {*/
-/*border-top: 1px solid #000;*/
-/*list-style: none;*/
-/*}*/
-/*ol li div {*/
-/*padding: 2px 0;*/
-/*}*/
-/*ol > li {*/
-/*text-indent: 0px;;*/
-/*}*/
-/*ol > li li div { padding-left: 20px; }*/
-/*ol > li li li div { padding-left: 40px; }*/
-/*ol > li li li li div { padding-left: 60px; }*/
-/*ol > li li li li li div { padding-left: 80px; }*/
-/*ol > li li li li li li div { padding-left: 100px; }*/
-/*li.placeholder {*/
-/*height: 20px;*/
-/*}*/
-/*ol li.placeholder { background: red; }*/
-/*ol li li.placeholder { background: green; }*/
-/*ol li li li.placeholder { background: yellow; }*/
-/*ol li li li li.placeholder { background: pink; }*/
+.tree {
+	/*width: 240px;*/
+	height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.ui-sortable-helper {
+	width: 200px;
+	border: 1px solid #000;
+	background: #fff;
+	cursor: pointer;
+}
+ol {
+	margin: 0;
+	padding: 0;
+}
+ol li {
+	border-top: 1px solid #eee;
+	list-style: none;
+}
+ol li div {
+	padding: .3em 0;
+	border-top: 1px solid #555;
+	position: relative;
+	top: -1px;
+	background: #fff;
+}
 
-.placeholder {
+ol > li.placeholder.ui-nestedSortable-error { margin-left: 0px; }
+
+ol > li li.placeholder,
+ol > li li li li.placeholder.ui-nestedSortable-error,
+ol > li li div { margin-left: 35px; }
+
+ol > li li li.placeholder,
+ol > li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li div { margin-left: 70px; }
+
+ol > li li li li.placeholder,
+ol > li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li div { margin-left: 105px; }
+
+ol > li li li li li.placeholder,
+ol > li li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li li div { margin-left: 140px; }
+
+ol > li li li li li li.placeholder,
+ol > li li li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li li li div { margin-left: 175px; }
+
+ol > li li li.placeholder.ui-nestedSortable-error {
+	margin-left: 30px;
+}
+ol > li li li li.placeholder.ui-nestedSortable-error {
+	margin-left: 60px;
+}
+
+ol li.placeholder { background: #eee; }
+
+/*ol li li.placeholder { background: green; }
+ol li li li.placeholder { background: yellow; }
+ol li li li li.placeholder { background: pink;*/ }
+
+/*.placeholder {
 			background-color: #cfcfcf;
 		}
 
@@ -60,5 +96,5 @@
 			padding: 3px;
 			margin: 0;
 			cursor: move;
-		}
+		}*/
 
