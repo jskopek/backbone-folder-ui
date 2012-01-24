@@ -1,5 +1,5 @@
 var TreeItemView = Backbone.View.extend({
-    className: "item no_tree_children",
+    className: "tree_row item no_tree_children",
     tagName: "li",
     template: _.template("<div>" +
         "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
@@ -34,7 +34,7 @@ var TreeItemView = Backbone.View.extend({
 
 var FolderView = Backbone.View.extend({
     tagName: "li",
-    className: "folder",
+    className: "tree_row folder",
     template: _.template("<div class='folder_details'></div><ol class='folder_items'></ol>"),
     children_views: {},
 
@@ -98,7 +98,7 @@ var FolderView = Backbone.View.extend({
         if( this.model.get("hidden") ) {
             $(this.el).addClass("hidden");
         } else {
-            $(this.el).addClass("hidden");
+            $(this.el).removeClass("hidden");
         }
 
 
@@ -182,7 +182,7 @@ var TreeView = FolderView.extend({
             opacity: .6,
             placeholder: 'placeholder',
             revert: 250,
-            tabSize: 35,
+            tabSize: 20,
             tolerance: 'pointer',
             toleranceElement: '> div',
             revertOnError: 0,

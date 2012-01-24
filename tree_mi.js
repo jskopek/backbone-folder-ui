@@ -1,6 +1,6 @@
 //VIEWS
 var TreeModuleItemView = TreeItemView.extend({
-    className: "module_item no_tree_children",
+    className: "tree_row module_item no_tree_children",
 
     initialize: function() {
         TreeItemView.prototype.initialize.call(this);
@@ -52,8 +52,8 @@ var ModuleItemFolderView = FolderView.extend({
         FolderView.prototype.initialize.call(this);
         this.model.bind("change:status", this.render_status, this);
     },
-    render: function() {
-        FolderView.prototype.render.call(this);
+    render_details: function() {
+        FolderView.prototype.render_details.call(this);
         this.render_status();
     },
     render_status: function() {
