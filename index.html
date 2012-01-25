@@ -49,8 +49,9 @@
                     "sortable": true,
                     "children": [new Folder({"title": "F1"})]
                 };
-                tree = new ModuleItemTree(data);
-                var fview = new FolderView({"model": tree});
+                tree = new ModuleItemTree();
+                tree.add_module_item(mi);
+                var fview = new TreeView({"model": tree});
                 $("#tree").html(fview.el);
             });
 

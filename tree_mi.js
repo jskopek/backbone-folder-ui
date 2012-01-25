@@ -147,6 +147,38 @@ var ModuleItemFolder = Folder.extend({
     }
 });
 
+/*
+ * ModuleItemTree extends Tree with extra methods that simplify
+ * process of adding and removing module items from tree. User can
+ * pass in ModuleItem instances, and ModuleItemTree instances will
+ * be created, stored, and referenced automatically
+ */
+var ModuleItemTree = Tree.extend({
+
+    //functions that simplify adding and removing module items from tree
+    //automate the process of creating TreeModuleItem
+    _module_items: {},
+    add_module_item: function(item) {
+        if( this.get_module_item(item) ) {
+            throw("Method does not allow module item to be inserted multiple times; You must do this manually");
+        }
+
+        var module_item = new TreeModuleItem({"module_item": item});
+        this.add(module_item);
+
+        this._module_items[item.cid] = module_item;
+    },
+    remove_module_item: function(item) {
+        var module_item = this.get_module_item(item);
+        delete this._module_items[item.cid];
+
+        this.remove(module_item);
+    },
+    get_module_item: function(item) {
+        return this._module_items[item.cid];
+    }
+});
+
 //helper function for development mode; switches statuses
 function next_status(current_status) {
     var statuses = ["active_visible", "visible", "active", "review", "inactive"];
