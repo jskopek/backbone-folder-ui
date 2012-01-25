@@ -74,7 +74,8 @@ var TreeModuleItem = TreeItem.extend({
         selectable: true,
         answered: false,
         item: undefined,
-        view_class: TreeModuleItemView
+        view_class: TreeModuleItemView,
+        title: '- Undefined -'
     }),
     initialize: function() {
         TreeItem.prototype.initialize.call(this);
@@ -83,7 +84,7 @@ var TreeModuleItem = TreeItem.extend({
             throw("MI cannot be initialized without `module_item` property");
         }
 
-        this.set({ "title": this.get("module_item").get("title") });
+        this.set({ "title": this.get("module_item").get("title") || this.defaults.title });
 
         //set status to module_item's status, and bind for MI's status changes
         this.set({"status": this.get("module_item").get("status") });

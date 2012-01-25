@@ -3,7 +3,8 @@ var TreeItem = Backbone.Model.extend({
         onClick: false, //optional function that is called when item clicked
         selectable: false,
         selected: false,
-        view_class: TreeItemView
+        view_class: TreeItemView,
+        title: ''
     },
     initialize: function() {
         //temp way of setting MI name really quickly
@@ -30,7 +31,7 @@ var Folder = Backbone.Model.extend({
     initialize: function() {
         if( _.isArray( this.get("children") ) ) {
             this.set({"children": new Backbone.Collection(this.get("children")) });
-        }
+        } 
 
         //update the folder's selected status
         this.get("children").bind("change:selected", this.update_selected, this);
@@ -121,7 +122,7 @@ var Tree = Folder.extend({
     defaults: {
         "sortable": false,
         "show_select_all": false,
-        "children": Backbone.Collection
+        "children": new Backbone.Collection()
     }
 });
 
