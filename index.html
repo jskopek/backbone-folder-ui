@@ -9,54 +9,10 @@
         <script src="jquery.ui.nestedSortable.js"></script>
         <link rel="stylesheet" type="text/css" href="tree.css"></script>
 
-        <!--<link rel="stylesheet" type="text/css" href="tree.css"/>-->
-        <!--<script src="tree_item.js"></script>-->
         <script src="tree_view.js"></script>
         <script src="tree.js"></script>
         <script src="tree_mi.js"></script>
-        <!--<script src="tree_status_lists.js"></script>-->
-        <script type="text/javascript">
-            var list;
-            $(document).ready(function() {
-                mi_type = Backbone.Model.extend({});
-                mi = new mi_type({ "title": "Module Item 1", "status": "active_visible" });
-
-                var data = {
-                    "sortable": true,
-                    "children": [
-                        new ModuleItemFolder({
-                            "title": "Status Folder 1",
-                            "children": [new TreeModuleItem({"module_item":mi}), new TreeItem({selectable: true, onClick:function() { alert("HELLO"); }})]
-                        }),
-                        new Folder({
-                            "title": "Folder 2",
-                            "children": [
-                                new Folder({
-                                    "title": "Folder 3",
-                                    "children": [new TreeItem(), new TreeItem(), new TreeModuleItem({"module_item":mi})]
-                                }),
-                                new TreeModuleItem({"module_item":mi})
-                            ]
-                        }),
-                        new TreeModuleItem({"module_item":mi})
-                    ]
-                };
-                var data_new = {
-                    "sortable": true,
-                    "children": [new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi}), new TreeModuleItem({"module_item":mi})]
-                };
-                var data_folders = {
-                    "sortable": true,
-                    "children": [new Folder({"title": "F1"})]
-                };
-                tree = new ModuleItemTree();
-                tree.add_module_item(mi);
-                var fview = new TreeView({"model": tree});
-                $("#tree").html(fview.el);
-            });
-
-        </script>
-
+        <script src="tree_example.js"></script>
     </head>
     <body>
         <h1>Testing</h1>
