@@ -6,15 +6,8 @@ var TreeItem = Backbone.Model.extend({
         constructor_ref: "TreeItemConstructorRef",
         title: ''
     },
-    serialize: function() {
-        data = this.toJSON();
-        delete data["view_class"];
-        return data;
-    },
-    deserialize: function(data) {
-        this.set(data);
-        console.log(">> DESERIALIZING ITEM", this.get("title"));
-    },
+    serialize: function() { return this.toJSON(); },
+    deserialize: function(data) { this.set(data); },
     initialize: function() {
         //temp way of setting MI name really quickly
         this.set({"title": "Item " + this.cid});
@@ -46,45 +39,29 @@ var Folder = Backbone.Model.extend({
         return data;
     },
     deserialize: function(data) {
+        //we'll be modifying data property, so we better clone it
         var data = _.extend({}, data);
 
-        //delete the data so that we don't set the list's children to be a serialized array
-        //when we call the 'set' command
-        var children_data = data["children"];
+        //convert folder's children into items by initializing their corresponding models
+        //and calling deserialize function on them
+        data["children"] = _.map(data["children"], function(child_data) {
+            var child_class = window[ child_data["constructor_ref"] ]["model"];
+            var child_obj = new child_class();
+
+            child_obj.deserialize(child_data);
+
+            return child_obj;
+        });
+
+        //wipe old children and set new ones
+        this.get("children").reset( data["children"] );
+
+
+        //delete the data so that we don't set the list's children to be a serialized array wehen we call 'set'
         delete data["children"];
 
         //set title and other properties
         this.set(data);
-
-        console.log("---- DESERIALIZING FOLDER " + this.get("title") + " ----");
-
-        //remove each child; messier then calling 'reset', but we don't need to 
-        while( this.get("children").length ) {
-            this.get("children").remove( this.get("children").at(0) );
-        }
-
-        /*//loop through all items and deserialize them, then reset this folder's children*/
-        /*children_data = _.map(children_data, function(child_data) {*/
-        /*var clss = eval(child_data["deserialize_class"]);*/
-        /*var obj = new clss();*/
-        /*obj.deserialize(child_data);*/
-        /*return obj;*/
-        /*});*/
-
-        for( var index in children_data ) {
-            var child_data = children_data[index];
-            var clss = window[ child_data["constructor_ref"] ]["model"];
-            var obj = new clss();
-
-            /*console.log(">?", obj.get("title"));*/
-            obj.deserialize(child_data);
-
-            /*if( obj.get("title") == "Folder 3" ) {debugger; }*/
-            this.get("children").add(obj);
-        }
-        /*this.get("children").reset(children_data);*/
-
-        console.log("---- END DESERIALIZING FOLDER " + this.get("title") + " ----");
     },
     initialize: function() {
         if( !this.get("children") ) {
@@ -99,14 +76,6 @@ var Folder = Backbone.Model.extend({
         this.get("children").bind("add", this.update_selected, this);
         this.get("children").bind("remove", this.update_selected, this);
         this.update_selected();
-
-        /*//*/
-        /*this.get("children").bind("reset", function() {*/
-        /*var children = this.get("children*/
-        /*while( this.get("children").length ) {*/
-        /*this.get("children").remove( this.get("children").at(0) );*/
-        /*}*/
-        /*});*/
 
         //updates children when folder's selected status chagned
         this.bind("change:selected", function() { 
