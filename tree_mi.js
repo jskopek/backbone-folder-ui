@@ -84,7 +84,11 @@ var TreeModuleItem = TreeItem.extend({
             throw("MI cannot be initialized without `module_item` property");
         }
 
+        //set title to be the module item's title
         this.set({ "title": this.get("module_item").get("title") || this.defaults.title });
+        this.get("module_item").bind("change:title", function() {
+            this.set({"title": this.get("module_item").get("title") });
+        }, this);
 
         //set status to module_item's status, and bind for MI's status changes
         this.set({"status": this.get("module_item").get("status") });

@@ -11,6 +11,7 @@ var TreeItemView = Backbone.View.extend({
 
         this.model.bind("change:selectable", this.render, this);
         this.model.bind("change:selected", this.render, this);
+        this.model.bind("change:title", this.render, this);
         this.render();
     },
     events: {
@@ -25,7 +26,7 @@ var TreeItemView = Backbone.View.extend({
         this.model.trigger("clicked");
     },
     render: function() {
-        console.log("rendering item", this.model.cid);
+        /*console.log("rendering item", this.model.cid);*/
         var html = this.template( this.model.toJSON() );
         $(this.el).html(html);
         this.delegateEvents();
@@ -36,7 +37,6 @@ var FolderView = Backbone.View.extend({
     tagName: "li",
     className: "tree_row folder",
     template: _.template("<div class='folder_details'></div><ol class='folder_items'></ol>"),
-    children_views: {},
 
     initialize: function() {
         this.model.bind("change:title", this.render_details, this);
@@ -46,33 +46,48 @@ var FolderView = Backbone.View.extend({
         this.model.bind("change:hidden", this.render_items, this);
         this.model.bind("change:hidden", this.render_details, this);
 
-        //create and remove item views when items are added to the folder
-        //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
-        //views if the child model is ever removed from the folder
+        //create and remove item views when items are added to the folder; see commentary under `initialize_children_views` for details
         this.model.get("children").bind("add", function(item) { this.children_views[item.cid] = this.initialize_item_view(item); }, this);
         this.model.get("children").bind("remove", function(item) { delete this.children_views[item.cid]; }, this);
-        this.model.get("children").each(function(item) { var view_class = item.get("view_class"); this.children_views[item.cid] = this.initialize_item_view(item); }, this);
-
+        this.model.get("children").bind("reset", this.initialize_children_views, this);
+        this.initialize_children_views();
+      
         this.model.get("children").bind("add", this.render_items, this);
         this.model.get("children").bind("remove", this.render_items, this);
+        this.model.get("children").bind("reset", this.render_items, this);
 
         $(this.el).attr("id", "folder_" + this.model.cid);
         $(this.el).data("model", this.model);
         this.render();
     },
+
+    //we initialize children views when they are added to the collection, and reference those views on redraw
+    //this is more efficient than creating new views each time we re-render the folder, and it allows us to remove
+    //views if the child model is ever removed from the folder
+    children_views: {},
+
+    //sets up views for all children
+    initialize_children_views: function() {
+        this.children_views = {}; 
+        this.model.get("children").each(function(item) {
+            this.children_views[item.cid] = this.initialize_item_view(item); 
+        }, this);
+    },
+
     //our tree is responsible for initializing new views for the items in the tree; each item should have a default class,
     //stored as the view_class property
     initialize_item_view: function(item) {
-        var view_class = item.get("view_class");
+        var view_class = window[ item.get("constructor_ref") ]["view"];
         return new view_class({"model": item});
     },
+
     toggle_hide: function(e) {
         e.preventDefault();
         var is_hidden = this.model.get("hidden");
         this.model.set({ "hidden": !is_hidden });
     },
     render: function() {
-        console.log("rendering folder", this.model.cid);
+        /*console.log("rendering folder", this.model.cid);*/
 
         $(this.el).html( this.template( this.model.toJSON() ) );
 

@@ -5,6 +5,48 @@ $(document).ready(function() {
     mi2 = new ModuleItem({ "title": "Module Item 2", "status": "active_visible" });
     mi3 = new ModuleItem({ "title": "Module Item 3", "status": "active_visible" });
 
+    var simple_data = {
+        "sortable": true,
+        "children": [
+            new Folder({
+                "title": "Status Folder 1",
+                "children": [new TreeItem(), new TreeItem({selectable: true, onClick:function() { 
+                    alert("HELLO"); 
+                }})]
+            }),
+            new Folder({
+                "title": "SF3",
+                "children": [
+                    new TreeItem()
+                    //new Folder({"title": "SF4", children: []})
+                ]
+            }),
+            new TreeItem()
+        ]
+    };
+
+    var simpler_data = {
+        "sortable": true,
+        "children": [
+            new Folder({
+                "title": "Status Folder 1",
+                "children": [new TreeItem(), new TreeItem({selectable: true, onClick:function() { 
+                    alert("HELLO"); 
+                }})]
+            }),
+            new Folder({
+                "title": "Folder 2",
+                "children": [
+                    new Folder({
+                        "title": "Folder 3",
+                        "children": [new TreeItem(), new TreeItem(), new TreeItem()]
+                    }),
+                    new TreeItem()
+                ]
+            }),
+            new TreeItem()
+        ]
+    };
     var data = {
         "sortable": true,
         "children": [
@@ -37,26 +79,13 @@ $(document).ready(function() {
     };
 
 
-    tree = new Tree(data);
-    var item = new TreeItem({...})
-        //tree.add(item);
-
-    var folder = new Folder({title...}
-    folder.add(item);
-
-
-    tree.add(folder)
-
-    
-
-
-
-
-
-
-
+    tree = new Tree(simpler_data);
     var fview = new TreeView({"model": tree});
+
     $("#tree").html(fview.el);
+    //tree.get("children").remove( tree.get("children").at(0) );
+    sd = tree.serialize();
+    /*tree.deserialize(sd);*/
 });
 
 

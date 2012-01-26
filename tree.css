@@ -3,8 +3,8 @@
 	font-family: Helvetica;
 }
 .tree {
-	width: 220px;
-	height: 255px;
+    /*width: 220px;*/
+    /*height: 255px;*/
 	border: 1px solid #000;
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -84,20 +84,20 @@ ol > li div .answered {
 	display: none;
 }
 /* folder status */
-ol > li div {
-	position: relative;
-	padding-right: 30px;
-}
-ol > li div .status {
-	position: absolute;
-	top: 2px;
-	right: 5px;
-	display: block;
-	width: 30px;
-	height: 25px;
-	background: red;
-	text-indent: -5000px;
-}
+/*ol > li div {*/
+/*position: relative;*/
+/*padding-right: 30px;*/
+/*}*/
+/*ol > li div .status {*/
+/*position: absolute;*/
+/*top: 2px;*/
+/*right: 5px;*/
+/*display: block;*/
+/*width: 30px;*/
+/*height: 25px;*/
+/*background: red;*/
+/*text-indent: -5000px;*/
+/*}*/
 /* 
 hide children of a hidden folder, but do not hide the
 list itself - this allows us to hover over and drop items into
