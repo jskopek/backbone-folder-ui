@@ -1,9 +1,16 @@
+import simplejson
+
 class Item:
     id = None
     def serialize(self):
-        pass
+        return {
+            "id": self.id,
+            "constructor_ref": "TreeItemConstructorRef"
+        }
+
     def deserialize(self, data):
-        pass
+        self.id = data["id"]
+
     def parents(self, tree):
         pass
 
@@ -13,22 +20,44 @@ class Folder(Item):
         self.children = []
         
     def add_item(self, item, at=None):
-        at = at or len(self.children)
+        if at is None:
+            at = len(self.children)
         self.children.insert(at, item)
         
     def remove_item(self, item):
         pass
+
     def serialize(self):
-        pass
+        serialized_children = []
+        for child in self.children:
+            serialized_children.append( child.serialize() )
+
+        return {
+            "id": self.id,
+            "constructor_ref": "FolderConstructorRef",
+            "children": serialized_children
+        }
+
     def deserialize(self, data):
-        pass
+        self.id = data["id"]
+        
+        self.children = []
+        for child in data["children"]:
+            item = self.initialize_type( child["constructor_ref"] )
+            item.deserialize( child )
+            self.children.append( item )
+
     def get_item(self, id):
         pass
 
     @staticmethod
     def initialize_type(type, id=None):
         #set up new item
-        item_class = Item if type == "item" else Folder
+        if type == "item" or type == "TreeItemConstructorRef":
+            item_class = Item
+        elif type == "folder" or type == "FolderConstructorRef":
+            item_class = Folder
+
         item = item_class()
         item.id = id
         return item
@@ -36,15 +65,19 @@ class Folder(Item):
 
 class CourseData(Folder):
     def __init__(self):
-        self.folder_structure = "[{'title':'', 'children':[]}]";
+        self.folder_structure = '{"id":"", "children":[]}';
     
     def initialize_tree(self):
+        json = simplejson.loads(self.folder_structure)
+
         tree = Folder()
-        tree.deserialize(self.folder_structure)
+        tree.deserialize(json)
         return tree
         
     def save_tree(self, tree):
-        self.folder_structure = tree.serialize()
+        json = tree.serialize()
+        self.folder_structure = simplejson.dumps(json)
+        return self.folder_structure
 
 def add_item(cd, type, id, folder_id=None, position=None):
     tree = cd.initialize_tree()
