@@ -9,9 +9,13 @@ class Item:
 
 
 class Folder(Item):
-    children = []
+    def __init__(self):
+        self.children = []
+        
     def add_item(self, item, at=None):
-        pass
+        at = at or len(self.children)
+        self.children.insert(at, item)
+        
     def remove_item(self, item):
         pass
     def serialize(self):
@@ -21,8 +25,18 @@ class Folder(Item):
     def get_item(self, id):
         pass
 
+    @staticmethod
+    def initialize_type(type, id=None):
+        #set up new item
+        item_class = Item if type == "item" else Folder
+        item = item_class()
+        item.id = id
+        return item
+
+
 class CourseData(Folder):
-    folder_structure = "[{'title':'', 'children':[]}]";
+    def __init__(self):
+        self.folder_structure = "[{'title':'', 'children':[]}]";
     
     def initialize_tree(self):
         tree = Folder()
@@ -35,10 +49,6 @@ class CourseData(Folder):
 def add_item(cd, type, id, folder_id=None, position=None):
     tree = cd.initialize_tree()
 
-    #set up new item
-    item_class = Item if type == "item" else Folder
-    item = item_class()
-    item.id = id
 
     parent_folder = tree.get_item(id)
     parent_folder.add_item(item, at=position)
