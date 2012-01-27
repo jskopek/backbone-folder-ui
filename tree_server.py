@@ -1,5 +1,41 @@
 import simplejson
 
+#request methods
+def add_item(cd, type, id, folder_id=None, position=None):
+    tree = cd.initialize_tree()
+
+    item = tree.initialize_type( type, id )
+    parent_folder = tree.get_item( folder_id ) or tree
+    parent_folder.add_item(item, at=position)
+
+    cd.save_tree(tree)
+
+def remove_item(cd, id):
+    tree = cd.initialize_tree()
+
+    item = tree.get_item(id)
+    for parent in item.parents(tree):
+        parent.remove_item(item)
+
+    cd.save_tree(tree)
+
+def move_item(cd, id, old_folder_id, new_folder_id, position):
+    tree = cd.initialize_tree()
+
+    old_folder = tree.get_item(old_folder_id)
+    new_folder = tree.get_item(new_folder_id)
+    item = old_folder.get_item(id)
+
+    old_folder.remove_item(item)
+    new_folder.insert_item(item, at=position)
+
+    cd.save_tree(tree)
+
+def set_folder_hidden(fs, folder_id, hidden_status):
+    pass
+
+
+##################
 class Item:
     id = None
     def serialize(self):
@@ -11,8 +47,15 @@ class Item:
     def deserialize(self, data):
         self.id = data["id"]
 
-    def parents(self, tree):
-        pass
+    def parents(self, folder):
+        parent_folders = []
+        for child in folder.children:
+            if isinstance(child, Folder):
+                parent_folders.extend( self.parents(child) )
+
+            if child.id == self.id and not folder in parent_folders:
+                parent_folders.append(folder)
+        return parent_folders
 
 
 class Folder(Item):
@@ -48,7 +91,19 @@ class Folder(Item):
             self.children.append( item )
 
     def get_item(self, id):
-        pass
+        if self.id == id:
+            return self
+
+        for child in self.children:
+            if child.id == id:
+                return child
+
+            if isinstance(child, Folder):
+                child_match = child.get_item(id)
+                if child_match:
+                    return child_match
+
+        return False
 
     @staticmethod
     def initialize_type(type, id=None):
@@ -78,39 +133,6 @@ class CourseData(Folder):
         json = tree.serialize()
         self.folder_structure = simplejson.dumps(json)
         return self.folder_structure
-
-def add_item(cd, type, id, folder_id=None, position=None):
-    tree = cd.initialize_tree()
-
-
-    parent_folder = tree.get_item(id)
-    parent_folder.add_item(item, at=position)
-
-    cd.save_tree(tree)
-
-def remove_item(cd, id):
-    tree = cd.initialize_tree()
-
-    item = tree.get_item(id)
-    for parent in item.parents(tree):
-        parent.remove_item(item)
-
-    cd.save_tree(tree)
-
-def move_item(cd, id, old_folder_id, new_folder_id, position):
-    tree = cd.initialize_tree()
-
-    old_folder = tree.get_item(old_folder_id)
-    new_folder = tree.get_item(new_folder_id)
-    item = old_folder.get_item(id)
-
-    old_folder.remove_item(item)
-    new_folder.insert_item(item, at=position)
-
-    cd.save_tree(tree)
-
-def set_folder_hidden(fs, folder_id, hidden_status):
-    pass
 
 
 ##f = Folder()
