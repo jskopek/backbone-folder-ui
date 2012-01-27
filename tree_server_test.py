@@ -53,10 +53,13 @@ class TestTreeBasic(TreeSetup):
         add_item( self.cd, "folder", "Folder 1" )
         add_item( self.cd, "item", "Item 1", position=0 )
         add_item( self.cd, "item", "Item 2", "Folder 1" )
+
+        tree = self.cd.initialize_tree()
+        self.assertEqual( len(tree.children), 2 )
+
         remove_item( self.cd, "Folder 1")
 
         tree = self.cd.initialize_tree()
-
         self.assertEqual( len(tree.children), 1 )
         self.assertEqual( tree.children[0].id, "Item 1" )
 
