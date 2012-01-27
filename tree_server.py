@@ -31,8 +31,13 @@ def move_item(cd, id, old_folder_id, new_folder_id, position):
 
     cd.save_tree(tree)
 
-def set_folder_hidden(fs, folder_id, hidden_status):
-    pass
+def set_folder_hidden(cd, folder_id, hidden_status):
+    tree = cd.initialize_tree()
+
+    folder = tree.get_item(folder_id)
+    folder.hidden = hidden_status
+
+    cd.save_tree(tree)
 
 
 ##################

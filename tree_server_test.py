@@ -30,6 +30,17 @@ class TestTreeBasic(TreeSetup):
         self.assertEqual(self.tree.get_item("Folder 2"), folder2)
         self.assertEqual(folder.get_item("Item 1"), item)
 
+    def test_hidden(self):
+        add_item( self.cd, "folder", "Folder 1" )
+        add_item( self.cd, "folder", "Folder 2" )
+        tree = self.cd.initialize_tree()
+        self.assertFalse( tree.children[0].hidden )
+
+        set_folder_hidden( self.cd, "Folder 1", True )
+        tree = self.cd.initialize_tree()
+        self.assertTrue( tree.children[0].hidden )
+        self.assertFalse( tree.children[1].hidden )
+
     def test_add_item(self):
         add_item( self.cd, "folder", "Folder 1" )
         add_item( self.cd, "item", "Item 1", position=0 )
