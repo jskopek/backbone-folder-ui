@@ -15,21 +15,6 @@ class TreeSetup(unittest.TestCase):
         #self.tree.deserialize(serialized_data)
 
 class TestTreeBasic(TreeSetup):
-    def test_get_item(self):
-        folder = self.tree.initialize_type("folder", "Folder 1")
-        self.tree.add_item(folder)
-
-        folder2 = self.tree.initialize_type("folder", "Folder 2")
-        self.tree.add_item(folder2, at=0)
-
-        item = self.tree.initialize_type("item", "Item 1")
-        folder.add_item(item)
-
-        self.assertEqual(self.tree.get_item("Item 1"), item)
-        self.assertEqual(self.tree.get_item("Folder 1"), folder)
-        self.assertEqual(self.tree.get_item("Folder 2"), folder2)
-        self.assertEqual(folder.get_item("Item 1"), item)
-
     def test_hidden(self):
         add_item( self.cd, "folder", "Folder 1" )
         add_item( self.cd, "folder", "Folder 2" )
@@ -192,11 +177,33 @@ class TestFolder(TreeSetup):
         self.assertEqual( len(self.tree.children), 3 )
         self.assertEqual( self.tree.children[1].id, "Item 2")        
 
-# class TestMajorMethods(self):
-#     def test_new_item(self):
-#         
-#         add_item( self.cd, "folder", "Folder 1")
-#         self.assertEqual( self, 
+    def test_get_item(self):
+        folder = self.tree.initialize_type("folder", "Folder 1")
+        self.tree.add_item(folder)
+
+        folder2 = self.tree.initialize_type("folder", "Folder 2")
+        self.tree.add_item(folder2, at=0)
+
+        item = self.tree.initialize_type("item", "Item 1")
+        folder.add_item(item)
+
+        self.assertEqual(self.tree.get_item("Item 1"), item)
+        self.assertEqual(self.tree.get_item("Folder 1"), folder)
+        self.assertEqual(self.tree.get_item("Folder 2"), folder2)
+        self.assertEqual(folder.get_item("Item 1"), item)
+    
+    def test_add_child_many_times(self):
+        folder = self.tree.initialize_type("folder", "Folder 1")
+        self.tree.add_item(folder)
+
+        item = self.tree.initialize_type("item", "Item 1")
+        folder.add_item(item)
+        folder.add_item(item)
+
+        self.assertEqual(folder.length(), 2)
+        folder.remove_item(item)
+        self.assertEqual(folder.length(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

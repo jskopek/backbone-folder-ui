@@ -73,9 +73,15 @@ class Folder(Item):
             at = len(self.children)
         self.children.insert(at, item)
         
+    def length(self):
+        return len(self.children)
+
     def remove_item(self, item):
         if item in self.children:
             self.children.remove(item)
+
+            #run again to check for multiple items
+            self.remove_item(item) 
             return True
         else:
             return False
