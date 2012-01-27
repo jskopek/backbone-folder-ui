@@ -30,14 +30,6 @@ class TestTreeBasic(TreeSetup):
         self.assertEqual(self.tree.get_item("Folder 2"), folder2)
         self.assertEqual(folder.get_item("Item 1"), item)
 
-    def test_deserialized_item(self):
-        self.cd.folder_structure = '{"children": [{"children": [], "id": "Folder 2", "constructor": "folder"}, {"children": [{"id": "Item 1", "constructor": "item"}], "id": "Folder 1", "constructor": "folder"}], "id": "", "constructor": "folder"}'
-        self.tree = self.cd.initialize_tree()
-
-        self.assertEqual( len(self.tree.children), 2 )
-        self.assertEqual( len(self.tree.children[0].children), 0 )
-        self.assertEqual( len(self.tree.children[1].children), 1 )
-
     def test_add_item(self):
         add_item( self.cd, "folder", "Folder 1" )
         add_item( self.cd, "item", "Item 1", position=0 )
@@ -96,14 +88,33 @@ class TestTreeBasic(TreeSetup):
 class TestTreeSerialization(TreeSetup):
     def test_init(self):
         self.cd.save_tree( self.tree )
-        self.assertEqual(self.cd.folder_structure, '{"children": [], "id": "", "constructor_ref": "FolderConstructorRef"}')
+        self.assertEqual(self.cd.folder_structure, '{"hidden": false, "children": [], "id": "", "constructor": "folder"}')
+
+    def test_deserialized_item(self):
+        self.cd.folder_structure = '{"children": [{"children": [], "id": "Folder 2", "constructor": "folder"}, {"children": [{"id": "Item 1", "constructor": "item"}], "id": "Folder 1", "constructor": "folder"}], "id": "", "constructor": "folder"}'
+        self.tree = self.cd.initialize_tree()
+
+        self.assertEqual( len(self.tree.children), 2 )
+        self.assertEqual( len(self.tree.children[0].children), 0 )
+        self.assertEqual( len(self.tree.children[1].children), 1 )
+
 
     def test_serialize_folder(self):
         item = self.tree.initialize_type("folder", "Folder 1")
         self.tree.add_item(item)
 
         self.cd.save_tree( self.tree )
-        self.assertEqual(self.cd.folder_structure, '{"children": [{"children": [], "id": "Folder 1", "constructor_ref": "FolderConstructorRef"}], "id": "", "constructor_ref": "FolderConstructorRef"}')
+        self.assertEqual(self.cd.folder_structure, '{"hidden": false, "children": [{"hidden": false, "children": [], "id": "Folder 1", "constructor": "folder"}], "id": "", "constructor": "folder"}')
+
+    def test_folder_hidden(self):
+        self.cd.folder_structure = '{"children": [{"children": [], "id": "Folder", "hidden": true, "constructor": "folder"}], "id": "", "constructor": "folder"}'
+        self.tree = self.cd.initialize_tree()
+        self.assertEqual( len(self.tree.children), 1 )
+        self.assertTrue( self.tree.children[0].hidden )
+
+        self.tree.children[0].hidden = False
+        json_string = self.cd.save_tree( self.tree )
+        self.assertEqual( json_string, '{"hidden": false, "children": [{"hidden": false, "children": [], "id": "Folder", "constructor": "folder"}], "id": "", "constructor": "folder"}')
 
     def test_serialized_nested_folder(self):
         folder = self.tree.initialize_type("folder", "Folder 1")
@@ -116,7 +127,7 @@ class TestTreeSerialization(TreeSetup):
         folder.add_item(item)
 
         self.cd.save_tree( self.tree )
-        self.assertEqual(self.cd.folder_structure, '{"children": [{"children": [], "id": "Folder 2", "constructor_ref": "FolderConstructorRef"}, {"children": [{"id": "Item 1", "constructor_ref": "TreeItemConstructorRef"}], "id": "Folder 1", "constructor_ref": "FolderConstructorRef"}], "id": "", "constructor_ref": "FolderConstructorRef"}')
+        self.assertEqual(self.cd.folder_structure, '{"hidden": false, "children": [{"hidden": false, "children": [], "id": "Folder 2", "constructor": "folder"}, {"hidden": false, "children": [{"id": "Item 1", "constructor": "item"}], "id": "Folder 1", "constructor": "folder"}], "id": "", "constructor": "folder"}')
 
     def test_serialized_ordered_items(self):
         item = self.tree.initialize_type("item", "Item 1")
@@ -126,14 +137,14 @@ class TestTreeSerialization(TreeSetup):
         self.tree.add_item(item, at=0)
 
         self.cd.save_tree( self.tree )
-        self.assertEqual(self.cd.folder_structure, '{"children": [{"id": "Item 2", "constructor_ref": "TreeItemConstructorRef"}, {"id": "Item 1", "constructor_ref": "TreeItemConstructorRef"}], "id": "", "constructor_ref": "FolderConstructorRef"}')
+        self.assertEqual(self.cd.folder_structure, '{"hidden": false, "children": [{"id": "Item 2", "constructor": "item"}, {"id": "Item 1", "constructor": "item"}], "id": "", "constructor": "folder"}')
 
     def test_serialize_item(self):
         item = self.tree.initialize_type("item", "Item 1")
         self.tree.add_item(item)
 
         self.cd.save_tree( self.tree )
-        self.assertEqual(self.cd.folder_structure, '{"children": [{"id": "Item 1", "constructor_ref": "TreeItemConstructorRef"}], "id": "", "constructor_ref": "FolderConstructorRef"}')
+        self.assertEqual(self.cd.folder_structure, '{"hidden": false, "children": [{"id": "Item 1", "constructor": "item"}], "id": "", "constructor": "folder"}')
 
 class TestFolder(TreeSetup):
     def test_initialize_item(self):

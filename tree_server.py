@@ -61,6 +61,7 @@ class Item:
 class Folder(Item):
     def __init__(self):
         self.children = []
+        self.hidden = False
         
     def add_item(self, item, at=None):
         if at is None:
@@ -81,15 +82,17 @@ class Folder(Item):
 
         return {
             "id": self.id,
+            "hidden": self.hidden,
             "constructor": "folder",
             "children": serialized_children
         }
 
     def deserialize(self, data):
         self.id = data["id"]
+        self.hidden = data.get("hidden", False)
         
         self.children = []
-        for child in data["children"]:
+        for child in data.get("children", []):
             item = self.initialize_type( child["constructor"] )
             item.deserialize( child )
             self.children.append( item )
