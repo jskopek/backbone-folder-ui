@@ -156,6 +156,12 @@ var Folder = Backbone.Model.extend({
         }
         add_to_list(this, list);
         return list;
+    },
+    selected: function(exclude_folders) {
+        items = this.flatten(exclude_folders).filter(function(item) {
+            return item.get("selectable") && item.get("selected");
+        });
+        return new Backbone.Collection(items);
     }
 });
 
