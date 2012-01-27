@@ -79,8 +79,18 @@ $(document).ready(function() {
     };
 
 
-    tree = new Tree(simpler_data);
+    tree = new Tree({"sortable": true});
+    tree = new Tree(data);
     var fview = new TreeView({"model": tree});
+
+
+    tree.bind("change:move", function() {
+        var item = '';
+        var old_folder = '';
+        var new_folder = '';
+        var position = 0;
+        console.log("move", item, old_folder, new_folder, position);
+    });
 
     $("#tree").html(fview.el);
     //tree.get("children").remove( tree.get("children").at(0) );

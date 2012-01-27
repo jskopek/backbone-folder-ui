@@ -134,9 +134,42 @@ var Folder = Backbone.Model.extend({
         children_arr.splice(to,0, children_arr.splice(from,1)[0]);
         this.get("children").trigger("move");
     },
-    get_item_by_id: function(cid) {
-        return this.flatten().detect(function(item) { return item.cid == cid; });
+
+    get_item: function(id, type) {
+        var item = false;
+        var type_class = type ? this.constructors[type]["model"] : undefined;
+
+        this.nested_each(function(child) {
+            if( type_class && !(child instanceof type_class) )
+                return true;
+
+            if( child.get("title") == id ) {
+                item = child;
+                return false;
+            }
+        });
+        return item;
     },
+
+    nested_each: function(fn) {
+        for( var index in this.get("children").models ) {
+            var child = this.get("children").models[index];
+
+            if( child instanceof Folder ) {
+                result = child.nested_each(fn);
+                if( result === false ) {
+                    return false;
+                }
+            }
+
+            result = fn.call(this, child);
+            if( result === false ) {
+                return false;
+            }
+
+        }
+    },
+
     flatten: function(exclude_folders) {
         //collections are like arrays, but with nice build-in methods
         var list = new Backbone.Collection();
@@ -162,8 +195,24 @@ var Folder = Backbone.Model.extend({
             return item.get("selectable") && item.get("selected");
         });
         return new Backbone.Collection(items);
-    }
+    },
+
 });
+
+//define the various classes for models and views
+//of tree types; used for rendering folders with various types
+//of children, as well as for serialization and deserialization
+Folder.prototype.constructors = {
+    "folder": {
+        "view": FolderView,
+        "model": Folder
+    },
+    "item": {
+        "view": TreeItemView,
+        "model": TreeItem
+    }
+}
+
 
 // TREE MODEL & VIEW ///
 var Tree = Folder.extend({
@@ -171,19 +220,5 @@ var Tree = Folder.extend({
         "sortable": false,
         "show_select_all": false,
         "children": new Backbone.Collection()
-    },
-
-    //define the various classes for models and views
-    //of tree types; used for rendering folders with various types
-    //of children, as well as for serialization and deserialization
-    constructors: {
-        "folder": {
-            "view": FolderView,
-            "model": Folder
-        },
-        "item": {
-            "view": TreeItemView,
-            "model": TreeItem
-        }
     }
 });

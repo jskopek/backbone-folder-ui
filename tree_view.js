@@ -77,7 +77,7 @@ var FolderView = Backbone.View.extend({
     //our tree is responsible for initializing new views for the items in the tree; each item should have a default class,
     //stored as the view_class property
     initialize_item_view: function(item) {
-        var view_class = Tree.prototype.constructors[ item.get("constructor") ]["view"];
+        var view_class = this.model.constructors[ item.get("constructor") ]["view"];
         return new view_class({"model": item});
     },
 
@@ -160,9 +160,33 @@ var TreeView = FolderView.extend({
     tagName: "div",
     className: "tree",
     template: _.template("<% if( show_select_all ) { %><a href='#' class='select_all'>Select All/None</a><% } %>" +
-        "<ol class='folder_items sortable'></ol>"),
+        "<ol class='folder_items sortable'></ol>" +
+        "<a href='#' class='add_folder'>Add Folder</a> | <a href='#' class='add_item'>Add Item</a> | <a href='#' class='delete'>Delete</a>"),
     events: {
-        "click a.select_all": "toggle_select_all"
+        "click a.select_all": "toggle_select_all",
+        "click a.add_folder": "add_folder",
+        "click a.add_item": "add_item",
+        "click a.delete": "delete"
+    },
+    add_folder: function(e) {
+        e.preventDefault();
+        var folder = new Folder();
+        folder.set({"title": "Folder " + folder.cid});
+        this.model.add(folder);
+        console.log("add", "folder", this.get("title"));
+    },
+    add_item: function(e) {
+        e.preventDefault();
+        var item = new TreeItem({"selectable": true});
+        this.model.add(item);
+        console.log("add", "item", this.get("title"));
+    },
+    delete: function(e) {
+        e.preventDefault();
+        var selected_items = this.model.selected();
+        selected_items.each(function(item) {
+            console.log("deleting", item.get("title"));
+        });
     },
     toggle_select_all: function(e) {
         e.preventDefault();
