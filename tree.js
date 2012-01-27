@@ -3,7 +3,7 @@ var TreeItem = Backbone.Model.extend({
         onClick: false, //optional function that is called when item clicked
         selectable: false,
         selected: false,
-        constructor_ref: "TreeItemConstructorRef",
+        constructor: "item",
         title: ''
     },
     serialize: function() { return this.toJSON(); },
@@ -28,7 +28,7 @@ var Folder = Backbone.Model.extend({
         hidden: false,
         selectable: true,
         selected: false,
-        constructor_ref: "FolderConstructorRef"
+        constructor: "folder"
     },
     serialize: function() {
         var data = this.toJSON();
@@ -161,16 +161,19 @@ var Tree = Folder.extend({
         "sortable": false,
         "show_select_all": false,
         "children": new Backbone.Collection()
+    },
+
+    //define the various classes for models and views
+    //of tree types; used for rendering folders with various types
+    //of children, as well as for serialization and deserialization
+    constructors: {
+        "folder": {
+            "view": FolderView,
+            "model": Folder
+        },
+        "item": {
+            "view": TreeItemView,
+            "model": TreeItem
+        }
     }
 });
-
-window.TreeItemConstructorRef = {
-    model: TreeItem,
-    view: TreeItemView
-}
-
-window.FolderConstructorRef = {
-    model: Folder,
-    view: FolderView
-}
-
