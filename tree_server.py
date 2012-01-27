@@ -68,7 +68,11 @@ class Folder(Item):
         self.children.insert(at, item)
         
     def remove_item(self, item):
-        pass
+        if item in self.children:
+            self.children.remove(item)
+            return True
+        else:
+            return False
 
     def serialize(self):
         serialized_children = []
