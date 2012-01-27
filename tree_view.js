@@ -77,7 +77,7 @@ var FolderView = Backbone.View.extend({
     //our tree is responsible for initializing new views for the items in the tree; each item should have a default class,
     //stored as the view_class property
     initialize_item_view: function(item) {
-        var view_class = window[ item.get("constructor_ref") ]["view"];
+        var view_class = Tree.prototype.constructors[ item.get("constructor") ]["view"];
         return new view_class({"model": item});
     },
 
