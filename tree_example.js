@@ -84,15 +84,35 @@ $(document).ready(function() {
     var fview = new TreeView({"model": tree});
 
 
-    tree.bind("change:move", function() {
-        var item = '';
-        var old_folder = '';
-        var new_folder = '';
-        var position = 0;
-        console.log("move", item, old_folder, new_folder, position);
+    tree.bind("sorted", function(item, old_folder, new_folder, position) {
+        console.log("move", item.get("title"), old_folder.get("title"), new_folder.get("title"), position);
     });
 
     $("#tree").html(fview.el);
+
+    var el = $("<a href='#' class='add_folder'>Add Folder</a> | <a href='#' class='add_item'>Add Item</a> | <a href='#' class='delete'>Delete</a>");
+    $("#tree").append(el);
+    $("#tree").find(".add_folder").click(function(e) {
+        e.preventDefault();
+        var folder = new Folder();
+        folder.set({"title": "Folder " + folder.cid});
+        tree.add(folder);
+        console.log("add", "folder", folder.get("title"));
+    });
+
+    $("#tree").find(".add_item").click(function(e) {
+        e.preventDefault();
+        var item = new TreeItem({"selectable": true});
+        tree.add(item);
+        console.log("add", "item", item.get("title"));
+    });
+
+    $("#tree").find(".delete").click(function(e) {
+        e.preventDefault();
+        var selected_items = tree.selected();
+        console.log("deleting", selected_items.pluck("title"));
+    });
+
     //tree.get("children").remove( tree.get("children").at(0) );
     sd = tree.serialize();
     /*tree.deserialize(sd);*/

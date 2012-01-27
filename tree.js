@@ -132,7 +132,7 @@ var Folder = Backbone.Model.extend({
 
         var children_arr = this.get("children").models;
         children_arr.splice(to,0, children_arr.splice(from,1)[0]);
-        this.get("children").trigger("move");
+        this.trigger("move");
     },
 
     get_item: function(id, type) {

@@ -55,6 +55,7 @@ var FolderView = Backbone.View.extend({
         this.model.get("children").bind("add", this.render_items, this);
         this.model.get("children").bind("remove", this.render_items, this);
         this.model.get("children").bind("reset", this.render_items, this);
+        this.bind("move", this.render_items, this);
 
         $(this.el).attr("id", "folder_" + this.model.cid);
         $(this.el).data("model", this.model);
@@ -160,33 +161,9 @@ var TreeView = FolderView.extend({
     tagName: "div",
     className: "tree",
     template: _.template("<% if( show_select_all ) { %><a href='#' class='select_all'>Select All/None</a><% } %>" +
-        "<ol class='folder_items sortable'></ol>" +
-        "<a href='#' class='add_folder'>Add Folder</a> | <a href='#' class='add_item'>Add Item</a> | <a href='#' class='delete'>Delete</a>"),
+        "<ol class='folder_items sortable'></ol>"),
     events: {
         "click a.select_all": "toggle_select_all",
-        "click a.add_folder": "add_folder",
-        "click a.add_item": "add_item",
-        "click a.delete": "delete"
-    },
-    add_folder: function(e) {
-        e.preventDefault();
-        var folder = new Folder();
-        folder.set({"title": "Folder " + folder.cid});
-        this.model.add(folder);
-        console.log("add", "folder", this.get("title"));
-    },
-    add_item: function(e) {
-        e.preventDefault();
-        var item = new TreeItem({"selectable": true});
-        this.model.add(item);
-        console.log("add", "item", this.get("title"));
-    },
-    delete: function(e) {
-        e.preventDefault();
-        var selected_items = this.model.selected();
-        selected_items.each(function(item) {
-            console.log("deleting", item.get("title"));
-        });
     },
     toggle_select_all: function(e) {
         e.preventDefault();
@@ -255,6 +232,8 @@ var TreeView = FolderView.extend({
                 } else if( start_pos != end_pos ) {
                     start_parent.move(item, end_pos);
                 }
+
+                tree_view.model.trigger("sorted", item, start_parent, end_parent, end_pos);
             }
         });
     }
