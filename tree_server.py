@@ -41,7 +41,7 @@ class Item:
     def serialize(self):
         return {
             "id": self.id,
-            "constructor_ref": "TreeItemConstructorRef"
+            "constructor": "item"
         }
 
     def deserialize(self, data):
@@ -81,7 +81,7 @@ class Folder(Item):
 
         return {
             "id": self.id,
-            "constructor_ref": "FolderConstructorRef",
+            "constructor": "folder",
             "children": serialized_children
         }
 
@@ -90,7 +90,7 @@ class Folder(Item):
         
         self.children = []
         for child in data["children"]:
-            item = self.initialize_type( child["constructor_ref"] )
+            item = self.initialize_type( child["constructor"] )
             item.deserialize( child )
             self.children.append( item )
 
@@ -112,9 +112,9 @@ class Folder(Item):
     @staticmethod
     def initialize_type(type, id=None):
         #set up new item
-        if type == "item" or type == "TreeItemConstructorRef":
+        if type == "item":
             item_class = Item
-        elif type == "folder" or type == "FolderConstructorRef":
+        elif type == "folder":
             item_class = Folder
 
         item = item_class()

@@ -31,7 +31,7 @@ class TestTreeBasic(TreeSetup):
         self.assertEqual(folder.get_item("Item 1"), item)
 
     def test_deserialized_item(self):
-        self.cd.folder_structure = '{"children": [{"children": [], "id": "Folder 2", "constructor_ref": "FolderConstructorRef"}, {"children": [{"id": "Item 1", "constructor_ref": "TreeItemConstructorRef"}], "id": "Folder 1", "constructor_ref": "FolderConstructorRef"}], "id": "", "constructor_ref": "FolderConstructorRef"}'
+        self.cd.folder_structure = '{"children": [{"children": [], "id": "Folder 2", "constructor": "folder"}, {"children": [{"id": "Item 1", "constructor": "item"}], "id": "Folder 1", "constructor": "folder"}], "id": "", "constructor": "folder"}'
         self.tree = self.cd.initialize_tree()
 
         self.assertEqual( len(self.tree.children), 2 )
