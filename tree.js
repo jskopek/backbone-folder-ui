@@ -6,7 +6,11 @@ var TreeItem = Backbone.Model.extend({
         constructor: "item",
         title: ''
     },
-    serialize: function() { return this.toJSON(); },
+    serialize: function() { 
+        data = this.toJSON(); 
+        delete data["onClick"];
+        return data;
+    },
     deserialize: function(data) { this.set(data); },
     initialize: function() {
         //temp way of setting MI name really quickly
