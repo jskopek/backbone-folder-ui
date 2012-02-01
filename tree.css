@@ -1,11 +1,19 @@
 .tree {
-	font-size: 12px;
-	font-family: Helvetica;
-}
-.tree {
 	overflow-y: auto;
 	overflow-x: hidden;
 }
+.tree::-webkit-scrollbar {
+	cursor: pointer;
+	background-color: #AAA;
+	border-radius: 0 3px 3px 0;
+	width: 9px;
+}
+.tree::-webkit-scrollbar-thumb {
+	cursor: pointer;
+	background-color: #666;
+	border-radius: 0 3px 3px 0;
+}
+
 .tree ol {
 	margin: 0;
 	padding: 0;
@@ -20,8 +28,11 @@
 	border-top: none;
 }
 .tree_row > div {
-	padding: .3em 0;
-	border-top: 1px solid #aaa;
+	overflow: hidden;
+	padding-bottom: 4px;
+	padding-top: 2px;
+	
+	border-top: 1px solid #ddd;
 	position: relative;
 	top: -1px;
 	background: #fff;
