@@ -84,7 +84,10 @@ $(document).ready(function() {
     var fview = new TreeView({"model": tree});
 
 
-    tree.bind("sorted", function(item, old_folder, new_folder, position) {
+    tree.bind("children:hidden", function(item) {
+        console.log("Hidden changed", item.get("title"), this);
+    });
+    tree.bind("children:sorted", function(item, old_folder, new_folder, position) {
         console.log("move", item.get("title"), old_folder.get("title"), new_folder.get("title"), position);
     });
 

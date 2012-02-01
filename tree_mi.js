@@ -77,6 +77,10 @@ var TreeModuleItem = TreeItem.extend({
         view_class: TreeModuleItemView,
         title: '- Undefined -'
     }),
+    serialize: function() {
+    },
+    deserialize: function() {
+    },
     initialize: function() {
         TreeItem.prototype.initialize.call(this);
 

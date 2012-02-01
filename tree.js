@@ -49,13 +49,13 @@ var Folder = Backbone.Model.extend({
         //convert folder's children into items by initializing their corresponding models
         //and calling deserialize function on them
         data["children"] = _.map(data["children"], function(child_data) {
-            var child_class = window[ child_data["constructor_ref"] ]["model"];
+            var child_class = this.constructors[ child_data["constructor"] ]["model"];
             var child_obj = new child_class();
 
             child_obj.deserialize(child_data);
 
             return child_obj;
-        });
+        }, this);
 
         //wipe old children and set new ones
         this.get("children").reset( data["children"] );
@@ -94,6 +94,11 @@ var Folder = Backbone.Model.extend({
                 child.set({"selected": is_selected});
             });
         });
+
+        //propagate 'children:hidden' status changes up to this folder's parents
+        //when the folder's children are hidden
+        this.bind("change:hidden", function() { this.trigger("children:hidden", this); }, this);
+        this.get("children").bind("children:hidden", function(item) {  this.trigger("children:hidden", item); }, this);
     },
     update_selected: function() {
         var children_selected = [];

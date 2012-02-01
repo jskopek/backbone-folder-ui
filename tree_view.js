@@ -233,7 +233,7 @@ var TreeView = FolderView.extend({
                     start_parent.move(item, end_pos);
                 }
 
-                tree_view.model.trigger("sorted", item, start_parent, end_parent, end_pos);
+                tree_view.model.trigger("children:sorted", item, start_parent, end_parent, end_pos);
             }
         });
     }
