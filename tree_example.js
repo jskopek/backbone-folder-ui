@@ -80,12 +80,12 @@ $(document).ready(function() {
 
 
     tree = new Tree({"sortable": true});
-    tree = new Tree(data);
-    var fview = new TreeView({"model": tree});
+    tree = new Tree();
+    var fview = new TreeView({"model": tree, "empty_message": "No items here..."});
 
 
     tree.bind("children:hidden", function(item) {
-        console.log("Hidden changed", item.get("title"), this);
+        console.log("hidden changed", item.get("title"), this);
     });
     tree.bind("children:sorted", function(item, old_folder, new_folder, position) {
         console.log("move", item.get("title"), old_folder.get("title"), new_folder.get("title"), position);
@@ -93,19 +93,19 @@ $(document).ready(function() {
 
     $("#tree").html(fview.el);
 
-    var el = $("<a href='#' class='add_folder'>Add Folder</a> | <a href='#' class='add_item'>Add Item</a> | <a href='#' class='delete'>Delete</a>");
+    var el = $("<a href='#' class='add_folder'>add folder</a> | <a href='#' class='add_item'>add item</a> | <a href='#' class='delete'>delete</a>");
     $("#tree").append(el);
     $("#tree").find(".add_folder").click(function(e) {
         e.preventDefault();
-        var folder = new Folder();
-        folder.set({"title": "Folder " + folder.cid});
+        var folder = new folder();
+        folder.set({"title": "folder " + folder.cid});
         tree.add(folder);
         console.log("add", "folder", folder.get("title"));
     });
 
     $("#tree").find(".add_item").click(function(e) {
         e.preventDefault();
-        var item = new TreeItem({"selectable": true});
+        var item = new treeitem({"selectable": true});
         tree.add(item);
         console.log("add", "item", item.get("title"));
     });

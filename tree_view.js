@@ -157,6 +157,7 @@ var FolderView = Backbone.View.extend({
     }
 });
 
+//initialization argments: {'model': TreeModel, 'empty_message': 'Message to show w/ no items'}
 var TreeView = FolderView.extend({
     tagName: "div",
     className: "tree",
@@ -180,6 +181,14 @@ var TreeView = FolderView.extend({
     render: function() {
         FolderView.prototype.render.call(this);
         this.set_sorting();
+    },
+    render_items: function() {
+        FolderView.prototype.render_items.call(this);
+
+        //if an empty message has been provided, add it
+        if( !this.model.get("children").length && this.options.empty_message ) {
+            $(this.el).children("ol.folder_items").html("<div class='empty'>" + this.options.empty_message + "</div>");
+        } 
     },
     set_sorting: function() {
         if( !this.model.get("sortable") ) {

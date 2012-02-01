@@ -3,9 +3,6 @@
 	font-family: Helvetica;
 }
 .tree {
-    /*width: 220px;*/
-    /*height: 255px;*/
-	border: 1px solid #000;
 	overflow-y: auto;
 	overflow-x: hidden;
 }
@@ -31,6 +28,11 @@
 }
 .tree_row > div em {
 	font-style: normal;
+}
+.tree .empty {
+    font-style: italic;
+    padding: .3em;
+    color: #444
 }
 
 .tree_row.placeholder { background: #eee; }
