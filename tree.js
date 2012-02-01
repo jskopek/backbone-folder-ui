@@ -17,7 +17,6 @@ var TreeItem = Backbone.Model.extend({
         this.set({"title": "Item " + this.cid});
 
         this.bind("clicked", function() {
-            console.log("clicked");
             if( typeof( this.get("onClick") ) == "function" ) {
                 this.get("onClick").call(this);
             }

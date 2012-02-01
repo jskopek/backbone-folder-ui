@@ -183,6 +183,9 @@ var TreeView = FolderView.extend({
         this.set_sorting();
     },
     render_items: function() {
+        //do not re-render the tree while it is being dragged
+        if( this.options.tree_dragging ) { return false; }
+
         FolderView.prototype.render_items.call(this);
 
         //if an empty message has been provided, add it
@@ -213,6 +216,10 @@ var TreeView = FolderView.extend({
             revertOnError: 0,
 
             start: function(event, ui) {
+                //keep track of the fact that the tree is being dragged, as this may affect rendering of the tree
+                //re-rendering the tree while dragging is occuring will cause the browser to hang, for example
+                tree_view.options.tree_dragging = true;
+
                 var start_pos = ui.item.index();
                 ui.item.data('start_pos', start_pos);
 
@@ -221,6 +228,8 @@ var TreeView = FolderView.extend({
                 ui.item.data('start_parent', start_parent);
             },
             update: function(event, ui) {
+                tree_view.options.tree_dragging = false;
+
                 var item = ui.item.data("model");
 
                 var end_parent = ui.item.parent("ol").parent("li").data("model");
