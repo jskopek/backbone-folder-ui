@@ -3,7 +3,7 @@ var TreeItemView = Backbone.View.extend({
     tagName: "li",
     template: _.template("<div>" +
         "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
-        "<em <% if( onClick ) { %>style='text-decoration:underline'<% } %>><%= title %></em></div>"),
+        "<em <% if( click ) { %>style='text-decoration:underline'<% } %>><%= title %></em></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);
@@ -15,15 +15,15 @@ var TreeItemView = Backbone.View.extend({
         this.render();
     },
     events: {
-        "click em": "clicked",
+        "click em": "click",
         "click input[type=checkbox]": "toggle_select"
     },
     toggle_select: function(e) {
         var is_selected = $(e.currentTarget).is(":checked");
         this.model.set({"selected": is_selected});
     },
-    clicked: function() {
-        this.model.trigger("clicked");
+    click: function() {
+        this.model.trigger("click");
     },
     render: function() {
         /*console.log("rendering item", this.model.cid);*/

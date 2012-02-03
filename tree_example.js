@@ -25,14 +25,14 @@ $(document).ready(function() {
         ]
     };
 
+    var click_item = new TreeItem({selectable: true, title: "Click item", click:function() { alert("HELLO"); }});
+
     var simpler_data = {
         "sortable": true,
         "children": [
             new Folder({
                 "title": "Status Folder 1",
-                "children": [new TreeItem(), new TreeItem({selectable: true, onClick:function() { 
-                    alert("HELLO"); 
-                }})]
+                "children": [new TreeItem(), click_item]
             }),
             new Folder({
                 "title": "Folder 2",
@@ -79,8 +79,8 @@ $(document).ready(function() {
     };
 
 
-    tree = new Tree({"sortable": true});
-    tree = new Tree();
+    //tree = new Tree({"sortable": true});
+    tree = new Tree(simpler_data);
     var fview = new TreeView({"model": tree, "empty_message": "No items here..."});
 
 

@@ -1,27 +1,27 @@
 var TreeItem = Backbone.Model.extend({
     defaults: {
-        onClick: false, //optional function that is called when item clicked
+        click: false, //optional function that is called when item clicked
         selectable: false,
         selected: false,
         constructor: "item",
-        title: ''
+        title: '-',
     },
     serialize: function() { 
         data = this.toJSON(); 
-        delete data["onClick"];
+        delete data["click"];
         return data;
     },
-    deserialize: function(data) { this.set(data); },
+    deserialize: function(data) { 
+        this.set(data); 
+    },
     initialize: function() {
-        //temp way of setting MI name really quickly
-        this.set({"title": "Item " + this.cid});
-
-        this.bind("clicked", function() {
-            if( typeof( this.get("onClick") ) == "function" ) {
-                this.get("onClick").call(this);
+        this.bind("click", function() { 
+            if( this.get("click") ) {
+                this.get("click").call(this);
             }
         });
     }
+
 });
 
 var Folder = Backbone.Model.extend({
@@ -226,7 +226,6 @@ Folder.prototype.constructors = {
 var Tree = Folder.extend({
     defaults: {
         "sortable": false,
-        "show_select_all": false,
-        "children": new Backbone.Collection()
+        "show_select_all": false
     }
 });
