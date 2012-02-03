@@ -85,7 +85,7 @@ var FolderView = Backbone.View.extend({
     toggle_hide: function(e) {
         e.preventDefault();
         var is_hidden = this.model.get("hidden");
-        this.model.set({ "hidden": !is_hidden });
+        this.model.save_hidden(!is_hidden);
     },
     render: function() {
         /*console.log("rendering folder", this.model.cid);*/
@@ -245,13 +245,13 @@ var TreeView = FolderView.extend({
 
                     //if we are moving a child into a hidden folder, mark the folder as opened on drop
                     if( end_parent.get("hidden") ) {
-                       end_parent.set({"hidden": false}); 
+                        end_parent.save_hidden(false);
                     }
                 } else if( start_pos != end_pos ) {
                     start_parent.move(item, end_pos);
                 }
 
-                tree_view.model.trigger("children:sorted", item, start_parent, end_parent, end_pos);
+                tree_view.model.trigger("sorted", item, start_parent, end_parent, end_pos);
             }
         });
     }

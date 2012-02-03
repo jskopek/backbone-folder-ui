@@ -21,7 +21,7 @@ var TreeItem = Backbone.Model.extend({
                 this.get("onClick").call(this);
             }
         });
-    },
+    }
 });
 
 var Folder = Backbone.Model.extend({
@@ -59,7 +59,6 @@ var Folder = Backbone.Model.extend({
         //wipe old children and set new ones
         this.get("children").reset( data["children"] );
 
-
         //delete the data so that we don't set the list's children to be a serialized array wehen we call 'set'
         delete data["children"];
 
@@ -94,10 +93,15 @@ var Folder = Backbone.Model.extend({
             });
         });
 
-        //propagate 'children:hidden' status changes up to this folder's parents
-        //when the folder's children are hidden
-        this.bind("change:hidden", function() { this.trigger("children:hidden", this); }, this);
-        this.get("children").bind("children:hidden", function(item) {  this.trigger("children:hidden", item); }, this);
+        //propagate 'save:hidden' status changes up to this folder's parents when a user has clicked a folder
+        this.get("children").bind("save:hidden", function(item) {  this.trigger("save:hidden", item); }, this);
+    },
+    //call when a user interaction results in a hidden status change
+    //sets the hidden status of a tree item and triggers a special save:hidden status
+    //this allows us to differentiate between user actions and data updates
+    save_hidden: function(hidden_status) {
+        this.set({"hidden": hidden_status});
+        this.trigger("save:hidden", this);
     },
     update_selected: function() {
         var children_selected = [];
