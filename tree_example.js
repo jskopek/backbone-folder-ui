@@ -25,14 +25,18 @@ $(document).ready(function() {
         ]
     };
 
-    var click_item = new TreeItem({selectable: true, title: "Click item", click:function() { alert("HELLO"); }});
+    var actions = [{
+        "group": "Course Status",
+        "items": [{ "id": "On" }, { "id": "Off" }]
+    }]
+    var action_item = new TreeActionItem({selectable: true, title: "Click item", current_action: "Off", actions: actions, click:function() { alert("HELLO"); }});
 
     var simpler_data = {
         "sortable": true,
         "children": [
             new Folder({
                 "title": "Status Folder 1",
-                "children": [new TreeItem(), click_item]
+                "children": [new TreeItem(), action_item]
             }),
             new Folder({
                 "title": "Folder 2",

@@ -24,6 +24,15 @@ var TreeItem = Backbone.Model.extend({
 
 });
 
+var TreeActionItem = TreeItem.extend({
+    defaults: _.extend({}, TreeItem.prototype.defaults, {
+        actions: [],
+        current_action: undefined,
+        constructor: "action_item"
+    }),
+});
+
+
 var Folder = Backbone.Model.extend({
     defaults: {
         title: "",
@@ -143,15 +152,16 @@ var Folder = Backbone.Model.extend({
         this.trigger("move");
     },
 
-    get_item: function(id, type) {
+    get_item: function(id, variable_name, type) {
         var item = false;
         var type_class = type ? this.constructors[type]["model"] : undefined;
+        variable_name = variable_name || "id";
 
         this.nested_each(function(child) {
             if( type_class && !(child instanceof type_class) )
                 return true;
 
-            if( child.get("title") == id ) {
+            if( child.get(variable_name) == id ) {
                 item = child;
                 return false;
             }
@@ -218,6 +228,10 @@ Folder.prototype.constructors = {
     "item": {
         "view": TreeItemView,
         "model": TreeItem
+    },
+    "action_item": {
+        "view": TreeActionItemView,
+        "model": TreeActionItem
     }
 }
 

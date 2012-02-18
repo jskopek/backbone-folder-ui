@@ -96,7 +96,6 @@ var FolderView = Backbone.View.extend({
         this.render_items();
     },
     render_details: function() {
-        /*if( this.model.cid == "c7" ) { debugger; }*/
         var html = _.template(
                 "<a href='#' class='toggle_hide'>Toggle Hide</a>" +
                 "<% if( selectable ) { %><input type='checkbox' <% if( selected == true ) { %>checked<% } %> /> <% } %>" +
@@ -257,3 +256,37 @@ var TreeView = FolderView.extend({
     }
 
 });
+
+var TreeActionItemView = TreeItemView.extend({
+    className: "tree_row module_item no_tree_children",
+    initialize: function() {
+        TreeItemView.prototype.initialize.call(this);
+        this.model.bind("change:actions", this.render_action, this);
+        this.model.bind("change:current_action", this.render_action, this);
+    },
+    render: function() {
+        TreeItemView.prototype.render.call(this);
+        this.render_action();
+    },
+    render_action: function() {
+        var el = $(this.el).children("div").find("span.status");
+        if( el.length ) {
+            $(this.el).find(".status").actionmenu("option", "current_action", this.model.get("current_action"));
+        } else {
+            el = $("<span class='status'></span>");
+            $(this.el).children("div").append( el );
+
+            //set up the actions dropdown
+            $(this.el).find(".status").actionmenu({
+                "actions": this.model.get("actions"),
+                "current_action": this.model.get("current_action")
+            });
+            $(this.el).find(".status").bind("actionmenuclicked", $.proxy(function(e, action) {
+                this.model.set({"current_action": action});
+                this.model.trigger("click:current_action");
+            }, this));
+        }
+    }
+});
+
+
