@@ -20,8 +20,10 @@ var TreeItem = Backbone.Model.extend({
                 this.get("click").call(this);
             }
         });
+    },
+    is_selected: function() {
+        return ( this.get("selectable") && ( this.get("selected") === true ) ) ? true : false;
     }
-
 });
 
 var TreeActionItem = TreeItem.extend({
@@ -214,7 +216,9 @@ var Folder = Backbone.Model.extend({
         });
         return new Backbone.Collection(items);
     },
-
+    is_selected: function() {
+        return ( this.get("selectable") && ( this.get("selected") === true ) ) ? true : false;
+    }
 });
 
 //define the various classes for models and views
