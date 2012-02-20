@@ -1,11 +1,21 @@
 <html>
     <head>
         <script type="text/javascript" src="../qunit/qunit.js"></script>
-        <script type="text/javascript" src="../js/tree.js"></script>
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="../qunit/qunit.css" />
+
+        <script src="../underscore-1.1.7.js"></script>
+        <script src="../jquery-1.7.1.js"></script>
+        <script src="../backbone-0.5.3.js"></script>
+
+
+        <script type="text/javascript" src="../js/tree_view.js"></script>
+        <script type="text/javascript" src="../js/tree.js"></script>
         <script type='text/javascript'>
             $(document).ready(function() {
+                module("Tree Item");
+                test("test1", function() {
+                    boogie();
+                });
             });
         </script>
     </head>

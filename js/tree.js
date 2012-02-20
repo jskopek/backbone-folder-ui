@@ -4,10 +4,10 @@ var TreeItem = Backbone.Model.extend({
         selectable: false,
         selected: false,
         constructor: "item",
-        title: '-',
+        title: '-'
     },
-    serialize: function() { 
-        data = this.toJSON(); 
+    serialize: function () {
+        var data = this.toJSON(); 
         delete data["click"];
         return data;
     },
