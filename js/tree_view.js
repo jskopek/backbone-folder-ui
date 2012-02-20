@@ -1,3 +1,6 @@
+window.tree_constructors = window.tree_constructors || {};
+window.tree_constructors.views = {};
+
 var TreeItemView = Backbone.View.extend({
     className: "tree_row item no_tree_children",
     tagName: "li",
@@ -32,6 +35,7 @@ var TreeItemView = Backbone.View.extend({
         this.delegateEvents();
     }
 });
+window.tree_constructors.views["item"] = TreeItemView;
 
 var FolderView = Backbone.View.extend({
     tagName: "li",
@@ -78,7 +82,7 @@ var FolderView = Backbone.View.extend({
     //our tree is responsible for initializing new views for the items in the tree; each item should have a default class,
     //stored as the view_class property
     initialize_item_view: function(item) {
-        var view_class = this.model.constructors[ item.get("constructor") ]["view"];
+        var view_class = window.tree_constructors.views[ item.get("constructor") ];
         return new view_class({"model": item});
     },
 
@@ -155,6 +159,7 @@ var FolderView = Backbone.View.extend({
         }, this);
     }
 });
+window.tree_constructors.views["folder"] = FolderView;
 
 //initialization argments: {'model': TreeModel, 'empty_message': 'Message to show w/ no items'}
 var TreeView = FolderView.extend({
@@ -264,6 +269,7 @@ var TreeView = FolderView.extend({
     }
 
 });
+window.tree_constructors.views["tree"] = TreeView;
 
 var TreeActionItemView = TreeItemView.extend({
     className: "tree_row module_item no_tree_children",
@@ -296,5 +302,5 @@ var TreeActionItemView = TreeItemView.extend({
         }
     }
 });
-
+window.tree_constructors.views["action_item"] = TreeActionItemView;
 

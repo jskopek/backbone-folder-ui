@@ -1,3 +1,6 @@
+window.tree_constructors = window.tree_constructors || {};
+window.tree_constructors.models = {};
+
 var TreeItem = Backbone.Model.extend({
     defaults: {
         click: false, //optional function that is called when item clicked
@@ -25,6 +28,7 @@ var TreeItem = Backbone.Model.extend({
         return ( this.get("selectable") && ( this.get("selected") === true ) ) ? true : false;
     }
 });
+window.tree_constructors.models["item"] = TreeItem;
 
 var TreeActionItem = TreeItem.extend({
     defaults: _.extend({}, TreeItem.prototype.defaults, {
@@ -33,7 +37,7 @@ var TreeActionItem = TreeItem.extend({
         constructor: "action_item"
     }),
 });
-
+window.tree_constructors.models["action_item"] = TreeActionItem;
 
 var Folder = Backbone.Model.extend({
     defaults: {
@@ -59,7 +63,7 @@ var Folder = Backbone.Model.extend({
         //convert folder's children into items by initializing their corresponding models
         //and calling deserialize function on them
         data["children"] = _.map(data["children"], function(child_data) {
-            var child_class = this.constructors[ child_data["constructor"] ]["model"];
+            var child_class = window.tree_constructors.models[ child_data["constructor"] ];
             var child_obj = new child_class();
 
             child_obj.deserialize(child_data);
@@ -156,7 +160,7 @@ var Folder = Backbone.Model.extend({
 
     get_item: function(id, variable_name, type) {
         var item = false;
-        var type_class = type ? this.constructors[type]["model"] : undefined;
+        var type_class = type ? window.tree_constructors.models[type] : undefined;
         variable_name = variable_name || "id";
 
         this.nested_each(function(child) {
@@ -220,25 +224,7 @@ var Folder = Backbone.Model.extend({
         return ( this.get("selectable") && ( this.get("selected") === true ) ) ? true : false;
     }
 });
-
-//define the various classes for models and views
-//of tree types; used for rendering folders with various types
-//of children, as well as for serialization and deserialization
-Folder.prototype.constructors = {
-    "folder": {
-        "view": FolderView,
-        "model": Folder
-    },
-    "item": {
-        "view": TreeItemView,
-        "model": TreeItem
-    },
-    "action_item": {
-        "view": TreeActionItemView,
-        "model": TreeActionItem
-    }
-}
-
+window.tree_constructors.models["folder"] = Folder;
 
 // TREE MODEL & VIEW ///
 var Tree = Folder.extend({
