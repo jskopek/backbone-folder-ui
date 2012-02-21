@@ -90,7 +90,25 @@ $(document).ready(function() {
         equal( f.get("selected"), "mixed" );
     });
     test("moving selected item between folders changed folder selection", function() {
-        undeclared();
+        var f1 = new Folder({"selectable": true});
+        var f2 = new Folder({"selectable": true});
+
+        var i1 = new TreeItem({ "selectable": true, "selected": true });
+
+        //adding selected item to folder selects it
+        ok( !f1.is_selected() );
+        f1.add( i1 );
+        ok( f1.is_selected() );
+
+        //removing selected item makes folder unselected
+        f1.remove( i1 );
+        ok( !f1.is_selected() );
+
+        //adding unselected item and selected item to folder makes it 'mixed'
+        var i2 = new TreeItem({ "selectable": true, "selected": false });
+        f1.add( [i1, i2] );
+        ok( !f1.is_selected() );
+        equal( f1.get("selected"), "mixed" );
     });
     test("child added to folder", function() {
         var f = new Folder();
@@ -156,19 +174,64 @@ $(document).ready(function() {
         equal( f.get('children').at(1).get("title"), "Item 3" );
     });
     test("child retrieved from folder", function() {
-        undeclared();
+        var f = new Folder();
+        var i1 = new TreeItem({ "title": "Item 1", "id": "a1", "color": "blue" });
+        var i2 = new TreeItem({ "title": "Item 2", "id": "a2", "color": "red" });
+        var i3 = new TreeItem({ "title": "Item 3", "id": "a3", "color": "green" });
+        var i4 = new TreeItem({ "title": "Item 4", "id": "a4", "color": "blue" });
+        f.add([i1, i2, i3, i4]);
+
+        //get by id
+        equal( f.get_item("a1"), i1 );
+        equal( f.get_item("a4"), i4 );
+        equal( f.get_item("aUnknown"), false );
+
+        //get by title
+        equal( f.get_item("Item 2", "title"), i2 );
+        equal( f.get_item("Item z", "title"), false );
+
+        //get by color
+        equal( f.get_item("blue", "color"), i1 );
+        equal( f.get_item("red", "color"), i2 );
+
+        //get by constructor
+        var i5 = new TreeItem({ "title": "Apple" });
+        var i6 = new Folder({ "title": "Apple" });
+        f.add([i5, i6]);
+        equal( f.get_item("Apple", "title", "item"), i5);
+        equal( f.get_item("Apple", "title", "folder"), i6);
     });
     test("child retrieved from nested folders", function() {
-        undeclared();
+        var f = new Folder(commonFolderStructure);
+        var i1 = f.get("children").last().get("children").last();
+
+        equal( f.get_item("Child item 3", "title"), i1 );
     });
     test("folder can loop through nested children", function() {
-        undeclared();
+        var f = new Folder(commonFolderStructure);
+
+        expect(3); //expect 3 ok() assertions - one for each item
+        f.nested_each(function(i) {
+            ok(i instanceof Backbone.Model);
+        });
     });
     test("folder can return flattened list of nested children", function() {
-        undeclared();
-    });
-    test("folder can return if it is selected or not", function() {
-        undeclared();
+        var f = new Folder(commonFolderStructure);
+
+        //when flattened, expect 4 results - three children
+        //and self
+        var f_array = f.flatten();
+        equal( f_array.length, 4 );
+        f_array.each(function(i) {
+            ok(i instanceof Backbone.Model);
+        });
+
+        //when folders are excluded from flatten, expect 2 results
+        var f_array = f.flatten(true);
+        equal( f_array.length, 2 );
+        f_array.each(function(i) {
+            ok(i instanceof TreeItem);
+        });
     });
 });
 
