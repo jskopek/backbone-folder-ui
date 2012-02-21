@@ -4,7 +4,7 @@ The Backbone Tree is a library that allows developers to create tree sets of dat
 
 A picture is worth a thousand words, so here's a what the Backbone Tree looks like in action:
 
-![](http://cl.ly/EQMd)
+![](http://cl.ly/EQMd/Image%202012.02.21%203:26:43%20PM.png)
 
 
 ##Features
