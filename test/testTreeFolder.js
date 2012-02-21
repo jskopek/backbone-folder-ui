@@ -63,53 +63,6 @@ $(document).ready(function() {
         ok( f2.get("children").last() instanceof Folder );
         equal(f2.get("children").last().get("children").length, 1);
     });
-    test("folder selected changes children selected", function() {
-        var f = new Folder(commonFolderStructure);
-        f.nested_each(function(i) { i.set({"selectable": true}) });
-
-        //check that all items are deselected
-        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
-        deepEqual( is_selected_list, [false, false, false, false] );
-
-        //select root folder and ensure that all children are selected
-        f.set({"selected": true});
-        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
-        deepEqual( is_selected_list, [true, true, true, true] );
-
-        //deselect root folder and ensure all children are unselected
-        f.set({"selected": false});
-        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
-        deepEqual( is_selected_list, [false, false, false, false] );
-        
-        //set the item that is the child of the child folder to true
-        //will set it's parent's folder selected status to true, and the root folder's
-        //status to mixed (but false in is_selected)
-        f.flatten().last().set({"selected": true});
-        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
-        deepEqual( is_selected_list, [false, false, true, true] );
-        equal( f.get("selected"), "mixed" );
-    });
-    test("moving selected item between folders changed folder selection", function() {
-        var f1 = new Folder({"selectable": true});
-        var f2 = new Folder({"selectable": true});
-
-        var i1 = new TreeItem({ "selectable": true, "selected": true });
-
-        //adding selected item to folder selects it
-        ok( !f1.is_selected() );
-        f1.add( i1 );
-        ok( f1.is_selected() );
-
-        //removing selected item makes folder unselected
-        f1.remove( i1 );
-        ok( !f1.is_selected() );
-
-        //adding unselected item and selected item to folder makes it 'mixed'
-        var i2 = new TreeItem({ "selectable": true, "selected": false });
-        f1.add( [i1, i2] );
-        ok( !f1.is_selected() );
-        equal( f1.get("selected"), "mixed" );
-    });
     test("child added to folder", function() {
         var f = new Folder();
         equal( f.get('children').length, 0 );
@@ -232,6 +185,55 @@ $(document).ready(function() {
         f_array.each(function(i) {
             ok(i instanceof TreeItem);
         });
+    });
+
+    module("Tree folder selection");
+    test("folder selected changes children selected", function() {
+        var f = new Folder(commonFolderStructure);
+        f.nested_each(function(i) { i.set({"selectable": true}) });
+
+        //check that all items are deselected
+        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
+        deepEqual( is_selected_list, [false, false, false, false] );
+
+        //select root folder and ensure that all children are selected
+        f.set({"selected": true});
+        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
+        deepEqual( is_selected_list, [true, true, true, true] );
+
+        //deselect root folder and ensure all children are unselected
+        f.set({"selected": false});
+        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
+        deepEqual( is_selected_list, [false, false, false, false] );
+        
+        //set the item that is the child of the child folder to true
+        //will set it's parent's folder selected status to true, and the root folder's
+        //status to mixed (but false in is_selected)
+        f.flatten().last().set({"selected": true});
+        var is_selected_list = f.flatten().map(function(i) { return i.is_selected(); });
+        deepEqual( is_selected_list, [false, false, true, true] );
+        equal( f.get("selected"), "mixed" );
+    });
+    test("moving selected item between folders changed folder selection", function() {
+        var f1 = new Folder({"selectable": true});
+        var f2 = new Folder({"selectable": true});
+
+        var i1 = new TreeItem({ "selectable": true, "selected": true });
+
+        //adding selected item to folder selects it
+        ok( !f1.is_selected() );
+        f1.add( i1 );
+        ok( f1.is_selected() );
+
+        //removing selected item makes folder unselected
+        f1.remove( i1 );
+        ok( !f1.is_selected() );
+
+        //adding unselected item and selected item to folder makes it 'mixed'
+        var i2 = new TreeItem({ "selectable": true, "selected": false });
+        f1.add( [i1, i2] );
+        ok( !f1.is_selected() );
+        equal( f1.get("selected"), "mixed" );
     });
 });
 
