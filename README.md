@@ -18,6 +18,12 @@ A picture is worth a thousand words, so here's a what the Backbone Tree looks li
 
 ##Getting Started
 
+Ensure that the dependent libraries - Underscore, Backbone, and jQuery - are included on your page. Next, include the library scripts:
+
+    <link rel="stylesheet" type="text/css" href="tree.css"></script>
+    <script src="js/tree_view.js"></script>
+    <script src="js/tree.js"></script>
+
 To create a new tree, first create a new instance of the `Tree` class. Next, create a `TreeView` instance and link it to the tree class by setting it's `model` property. The `TreeView` renders the `Tree`s data in its `el` property.
 
     var tree_instance = new Tree();
@@ -29,17 +35,17 @@ Trees contain two types of items - `TreeItem` and `Folder` instances. Let's crea
     var item = new TreeItem({"title": "Item A"});
     var folder = new Folder({"title": "Folder 1", "children": [item]})
 
-Trees and Folders both store their children in the `children` property, which in turn is a `Backbone.Collection` instance. As such, we can use all of the `Backbone.Collection` [methods](http://backbonejs.org/#Collection-Underscore-Methods) to add, remove, and retrieve items. Let's add the newly created folder to the tree
+Trees and folders have `add` and `remove` methods to add items after they have been initialized:
 
-    tree_instance.get("children").add( folder );
+   tree_instance.add( folder );
 
 Tada! The `#tree` element now shows folder `Folder 1` and it's child `Item A`. Our `TreeView` instance monitors for all changes to the tree, and automatically updates itself on every change.
 
 We can use Backbone's built in methods to view and manipulate our data
 
-    tree.get("children").each(function(child) { console.log(child); }); //Folder 1
-    tree.get("children").length(); //1
-    tree.get("children").remove( folder );
+    tree.each(function(child) { console.log(child); }); //Folder 1
+    tree.length(); //1
+    tree.remove( folder );
 
 We can also use built-in methods to find child items and loop through nested children
     
@@ -50,6 +56,7 @@ We can also use built-in methods to find child items and loop through nested chi
 ##Items
 
 Items are the simplest data types in the tree. They look something like this:
+
 ![](http://cl.ly/EPid/Image%202012.02.21%204:52:38%20PM.png)
 
 ###Creating items
@@ -57,7 +64,7 @@ Items are the simplest data types in the tree. They look something like this:
 Items can be created by initializing a new instance of `TreeItem` and adding it to either a `Tree` or a `Folder` instance:
 
     var item = new TreeItem({"title": "Item A"});
-    tree.get("children").add( item );
+    tree.add( item );
     item.set({"title": "Item A - modified"});
 
 ###Methods
@@ -85,9 +92,48 @@ These properties can be changed with Backbone's `get` and `set` methods (e.g. `i
 * `change`: triggered every time a property is changed
 
 ##Folders
+
+The `Folder` model shares all of the methods and properties of the `TreeItem` model, and includes several methods and properties of its own. Here's what a folder looks like:
+
+![](http://cl.ly/EPTK/Image%202012.02.21%205:00:40%20PM.png)
+
 ###Creating folders
+
+Folders are created in much the same way as `TreeItem`s. An optional array of `children` may be passed; this will be converted into a `Backbone.Collection`
+
+    var folder = new Folder({"title": "Folder 1", "children": [item]});
+    tree.add( folder );
+
+Trees and Folders both store their children in the `children` property, which in turn is a `Backbone.Collection` instance. As such, we can use all of the `Backbone.Collection` [methods](http://backbonejs.org/#Collection-Underscore-Methods) to add, remove, and retrieve items. Let's add the newly created folder to the tree
+
+    tree_instance.get("children").filter(function(item) { return item.id % 2; });
+
+###Properties
+
+The `Folder` includes all the `TreeItem`s properties, as well as the following:
+
+* `children`: a `Backbone.Collection` instance of all of the folder's child folders and items
+
 ###Methods
+
+* `add( item, position )`: adds an item to the folder. Can pass in an individual item or list of item. The optional `position` value specifies where the item is added, but defaults to the end of the folder
+* `remove( item )`: remove the referenced item from the folder
+* `move( item, position )`: move an item from the folder to the new position
+* `each( callback )`: loops thorugh each item in the folder
+* `length()`: return the number of children in the folder
+* `nested_each( callback )`: recursively loops through each item in the folder, including their children if they are folders 
+* `get_item( value, variable_name, type )`: look for an item with the `id` of `value`. The search takes place recursively thorugh nested folders. The optional `variable_name` allows us to specify an alternative property to serach values by (e.g. title). The optional `type` property lets us limit our search to items with a specific constructor (e.g. `folder`)
+* `flatten()`: returns a backbone collection of all of items in folder, including nested children
+* `selected()`: returns all selected items in folder, including nested children
+
 ###Events
+
+Folders have the following events in addition the the `TreeItem`s `change` events:
+
+* `add`
+* `remove`
+* `move`: triggered when a child's position is changed in the folder
+* `save:hidden`: a special event that is triggered when the hidde indicator is clicked by a user; triggered in addition to the `change:hidden` event, which is fired if the value is changed programmatically
 
 ##Tree
 ###Sorting
