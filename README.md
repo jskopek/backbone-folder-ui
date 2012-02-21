@@ -49,15 +49,20 @@ We can also use built-in methods to find child items and loop through nested chi
 
 ##Items
 
-Items are the simplest data types in the tree. They contain the following properties: `title, id, hidden, click, selected, selectable`.
+Items are the simplest data types in the tree. They look something like this:
+![](http://cl.ly/EPid/Image%202012.02.21%204:52:38%20PM.png)
 
 ###Creating items
 
-Items can be created by initializing a new instance of `TreeItem`
+Items can be created by initializing a new instance of `TreeItem` and adding it to either a `Tree` or a `Folder` instance:
+
+    var item = new TreeItem({"title": "Item A"});
+    tree.get("children").add( item );
+    item.set({"title": "Item A - modified"});
 
 ###Methods
 
-The `TreeItem` extends `Backbone.Model`, and therefore has access to all of it's [methods](http://backbonejs.org/#Model). It also has the following methods:
+The `TreeItem` extends `Backbone.Model`, and therefore has access to all of its [properties and methods](http://backbonejs.org/#Model).
 
 The TreeItem has several special properties. 
 
@@ -68,7 +73,7 @@ The TreeItem has several special properties.
 * `selected`: a Boolean value indicating if the item has been selected
 * `selectable`: a Boolean value indicating if the item is capable of being selected; determines if a select checkbox is rendered for the item
 
-These properties can be changed with Backbone's `get` and `set` methods (e.g. `item.get('title'); item.set({'title': 'Item A - modified'});`)
+These properties can be changed with Backbone's `get` and `set` methods (e.g. `item.get('title');` or `item.set({'title': 'Item A - modified'});`)
 
 * `serialize()`: converts the item's data into a JSON object
 * `deserialize( json )`: updates itself with the passed JSON object
@@ -83,8 +88,12 @@ These properties can be changed with Backbone's `get` and `set` methods (e.g. `i
 ###Creating folders
 ###Methods
 ###Events
-###Serialization & Deserialization
-###Constructors
+
+##Tree
+###Sorting
+
+##Serialization & Deserialization
+##Constructors
 
 Both `TreeItem` and `Folder` classes have a `constructor` property, which is a string representing the type of object they represent. When an item is serialized, the `constructor` property is passed in to distinguish the data type. When the `deserialize` method is called on a `Tree` or a `Folder`, the `constructor` property is used to determine what classes to initialize for each child.
 
@@ -103,10 +112,6 @@ A global `window.tree_constructors` dictionary contains a reference to the model
 
 If you are extending the tree with your own custom types, be sure to set a `constructor` property on your model and assign corresponding properties to the tree_constructor dictionary
 
-###Extending
-
-##Tree
-###Sorting
 
 ##Tree Views
 
