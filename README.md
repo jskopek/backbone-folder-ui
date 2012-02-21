@@ -26,8 +26,8 @@ Ensure that the dependent libraries - Underscore, Backbone, and jQuery - are inc
 
 To create a new tree, first create a new instance of the `Tree` class. Next, create a `TreeView` instance and link it to the tree class by setting it's `model` property. The `TreeView` renders the `Tree`s data in its `el` property.
 
-    var tree_instance = new Tree();
-    var tree_view = new TreeView({"model": tree_instance});
+    var tree = new Tree();
+    var tree_view = new TreeView({"model": tree});
     $("#tree").html( tree_view.el )
 
 Trees contain two types of items - `TreeItem` and `Folder` instances. Let's create an instance of each
@@ -37,7 +37,7 @@ Trees contain two types of items - `TreeItem` and `Folder` instances. Let's crea
 
 Trees and folders have `add` and `remove` methods to add items after they have been initialized:
 
-   tree_instance.add( folder );
+    tree.add( folder );
 
 Tada! The `#tree` element now shows folder `Folder 1` and it's child `Item A`. Our `TreeView` instance monitors for all changes to the tree, and automatically updates itself on every change.
 
@@ -130,15 +130,26 @@ The `Folder` includes all the `TreeItem`s properties, as well as the following:
 
 Folders have the following events in addition the the `TreeItem`s `change` events:
 
-* `add`
-* `remove`
+* `add`: triggered when item is added to folder
+* `remove`: triggered when item is removed from folder
 * `move`: triggered when a child's position is changed in the folder
 * `save:hidden`: a special event that is triggered when the hidde indicator is clicked by a user; triggered in addition to the `change:hidden` event, which is fired if the value is changed programmatically
 
 ##Tree
+
+Trees share all of the properties of folders, but add two unique properties:
+
+* `sortable`: A Boolean value that determines if the tree can be reordered with drag & drop
+* `show_select_all`: A Boolean value that determines if we should show a "Select All/None" dialog in the tree view
+
 ###Sorting
 
+Trees can be sorted via drag & drop, thanks to the excellent [nestedSort](http://mjsarfatti.com/sandbox/nestedSortable/) jQuery plugin. To enable drag & drop sorting, include the nestedSort library in your page and set the `sortable` Tree property  to true. The tree structure will be automatically updated as the user moves folders items around, and `add`, `remove`, and `move` events will be triggered as appropriate.
+
 ##Serialization & Deserialization
+
+Items, Folders, and Trees can all be serialized and deserialized from JSON objects with the `serialize` and `deserialize` command. This functionality allows you to create dynamic trees on the client side, store them remotely or via local storage, and then recall them at a later time. Note that the `click` property of `TreeItem` and `Folder` objects is lost during serialization, as we are unable to serialize functions
+
 ##Constructors
 
 Both `TreeItem` and `Folder` classes have a `constructor` property, which is a string representing the type of object they represent. When an item is serialized, the `constructor` property is passed in to distinguish the data type. When the `deserialize` method is called on a `Tree` or a `Folder`, the `constructor` property is used to determine what classes to initialize for each child.
@@ -158,11 +169,33 @@ A global `window.tree_constructors` dictionary contains a reference to the model
 
 If you are extending the tree with your own custom types, be sure to set a `constructor` property on your model and assign corresponding properties to the tree_constructor dictionary
 
-
 ##Tree Views
+
+As of now, the Backbone Tree only has one way of presenting trees. The default `TreeView` ties into a `Tree` instance by setting it as the `model` property. Alternate views for tree data will be coming soon!
 
 ##Download & Contribute
 
+To download the latest version of the library, click on the `Zip` button at the top of the page. We welcome all feature requests, issues, and pull requests.
+
 ##License
 
-##Examples
+Copyright (c) 2012 Top Hat Monocle, http://tophatmonocle.com/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
