@@ -1,0 +1,146 @@
+.tree {
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.tree::-webkit-scrollbar {
+	cursor: pointer;
+	background-color: #AAA;
+	border-radius: 0 3px 3px 0;
+	width: 9px;
+}
+.tree::-webkit-scrollbar-thumb {
+	cursor: pointer;
+	background-color: #666;
+	border-radius: 0 3px 3px 0;
+}
+
+.tree ol {
+	margin: 0;
+	padding: 0;
+}
+.tree ol li {
+	list-style: none;
+}
+.tree_row {
+	/*border-top: 1px solid #eee;*/
+}
+.tree > ol > .tree_row:first-child {
+	border-top: none;
+}
+.tree_row > div {
+	overflow: hidden;
+	padding-bottom: 4px;
+	padding-top: 2px;
+	
+	border-top: 1px solid #ddd;
+	position: relative;
+	top: -1px;
+	background: #fff;
+}
+.tree_row > div em {
+	font-style: normal;
+}
+.tree .empty {
+    font-style: italic;
+    padding: .3em;
+    color: #444
+}
+
+.tree_row.placeholder { background: #eee; }
+
+/* spacing for items in tree */
+.tree_row > div {
+	padding-left: 3px;
+}
+.tree_row > div input[type=checkbox],
+.tree_row > div a.toggle_hide,
+.tree_row > div em span {
+	margin-right: 5px;
+}
+
+/* drag effect */
+.tree .ui-sortable-helper {
+	width: 200px;
+	border: 1px solid #000;
+	cursor: pointer;
+}
+
+/*
+folder details
+*/
+li.folder > .folder_details a.toggle_hide,
+li.folder > .folder_details em span {
+	background-image: url(tree_sprite.png);	
+	background-repeat: no-repeat;
+	text-indent: -5000px;
+	display: inline-block;
+	height: 16px;
+	width: 14px;
+	/*margin: 0 3px;*/
+	line-height: 1em;
+}
+li.folder.hidden > .folder_details a.toggle_hide {
+	background-position: 0 -14px;
+}
+li.folder > .folder_details a.toggle_hide {
+	background-position: -14px -14px;
+}
+li.folder > .folder_details em span {
+	background-position: -14px 0px;
+}
+li.folder.hidden > .folder_details em span {
+	background-position: 0px 0px;
+}
+
+/* answered */
+ol > li div .answered {
+	display: none;
+}
+/* folder status */
+/*ol > li div {*/
+/*position: relative;*/
+/*padding-right: 30px;*/
+/*}*/
+/*ol > li div .status {*/
+/*position: absolute;*/
+/*top: 2px;*/
+/*right: 5px;*/
+/*display: block;*/
+/*width: 30px;*/
+/*height: 25px;*/
+/*background: red;*/
+/*text-indent: -5000px;*/
+/*}*/
+/* 
+hide children of a hidden folder, but do not hide the
+list itself - this allows us to hover over and drop items into
+hidden folders
+*/
+ol.hidden > li { display: none; }
+
+
+/* 
+nested folder widths for up to 5 layers of folders 
+we set the 
+*/
+ol > li.placeholder.ui-nestedSortable-error { margin-left: 0px; }
+
+ol > li li.placeholder,
+ol > li li li li.placeholder.ui-nestedSortable-error,
+ol > li li div { margin-left: 20px; }
+
+ol > li li li.placeholder,
+ol > li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li div { margin-left: 40px; }
+
+ol > li li li li.placeholder,
+ol > li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li div { margin-left: 60px; }
+
+ol > li li li li li.placeholder,
+ol > li li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li li div { margin-left: 80px; }
+
+ol > li li li li li li.placeholder,
+ol > li li li li li li li.placeholder.ui-nestedSortable-error,
+ol > li li li li li li div { margin-left: 100px; }
