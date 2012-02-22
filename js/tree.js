@@ -175,6 +175,9 @@ var Folder = Backbone.Model.extend({
         return item;
     },
 
+    each: function(fn) { this.get("children").each(fn); },
+    length: function() { return this.get("children").length(); },
+
     nested_each: function(fn) {
         for( var index in this.get("children").models ) {
             var child = this.get("children").models[index];
