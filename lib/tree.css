@@ -48,8 +48,7 @@
 }
 .tree_row > div {
 	overflow: hidden;
-	padding-bottom: 4px;
-	padding-top: 2px;
+	padding: 2px 0;
 	
 	border-top: 1px solid #ddd;
 	position: relative;
@@ -120,6 +119,7 @@ li.folder.hidden > .folder_details em span {
     cursor: move;
 }
 
+
 /* answered */
 ol > li div .answered {
 	display: none;
@@ -172,3 +172,11 @@ ol > li li li li li div { margin-left: 80px; }
 ol > li li li li li li.placeholder,
 ol > li li li li li li li.placeholder.ui-nestedSortable-error,
 ol > li li li li li li div { margin-left: 100px; }
+
+/*
+tree items that have a click callback
+*/
+em.clickable {
+	cursor: pointer;
+	color: #0544A1;
+}
