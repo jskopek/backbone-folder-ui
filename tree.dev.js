@@ -273,7 +273,7 @@ var TreeItemView = Backbone.View.extend({
     tagName: "li",
     template: _.template("<div>" +
         "<% if( selectable ) { %><input type='checkbox' <% if( selected ) { %>checked<% } %> /> <% } %>" +
-        "<em <% if( click ) { %>style='text-decoration:underline'<% } %>><%= title %></em></div>"),
+        "<em <% if( click ) { %>class='clickable'<% } %>><%= title %></em></div>"),
 
     initialize: function() {
         $(this.el).attr("id", "mi_" + this.model.cid);

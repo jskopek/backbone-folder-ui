@@ -111,6 +111,15 @@ li.folder.hidden > .folder_details em span {
 	background-position: 0px 0px;
 }
 
+/* hide drag selection in sortable trees (removes confusion) */
+.tree .sortable ::selection,
+.tree .sortable ::-moz-selection {
+    background: rgba(0,0,0,0);
+}
+.tree .sortable em {
+    cursor: move;
+}
+
 /* answered */
 ol > li div .answered {
 	display: none;
