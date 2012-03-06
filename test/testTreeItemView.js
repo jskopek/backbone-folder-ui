@@ -1,11 +1,12 @@
 $(document).ready(function() {
     module("Tree Item View");
     test("item view shows title", function() {
+        var el = $("<div id='tree'></div>");
         var iza = new TreeItem({"title": "Item 1"});
         var v1 = new TreeItemView({"model": iza});
-        $("#tree").html( v1.el );
+        $( el ).html( v1.el );
 
-        equal( $("#tree em").html(), "Item 1" );
+        equal( $(el).find("em").html(), "Item 1" );
     });
     /*test("item view updates title when changed", function() {*/
     /*equal( $("#tree2 em").html(), "Item 1" );*/
