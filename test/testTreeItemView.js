@@ -33,7 +33,12 @@ $(document).ready(function() {
         equal( $(this.el).find(".tree_row.item:first input[type=checkbox]").is(":checked"), false );
     });
     test("item view select checkbox changes checked view when clicked", function() {
-        undefined();
+        set_common_variables(this, {"title": "Item 1", "selectable": true});
+
+        $("body").append(this.el);
+        ok( !this.i.get("selected") );
+        $(this.el).find(".tree_row.item:first input[type=checkbox]").click();
+        ok( this.i.get("selected") );
     });
     test("title triggers click event when clicked", function() {
         undefined();
