@@ -39,7 +39,16 @@ $(document).ready(function() {
         ok( this.i.get("selected") );
     });
     test("title triggers click event when clicked", function() {
-        undefined();
+        expect(2);
+        var okeydokey = function() { ok(true); }
+
+        //initialize with binding
+        set_common_variables(this, {"title": "Item 1", "click": okeydokey, "selectable": true, "selected": false});
+
+        //post-initializing binding
+        this.i.bind("click", okeydokey);
+
+        $(this.el).find(".tree_row em").click();
     });
 
     module("Tree Folders");
@@ -87,27 +96,26 @@ $(document).ready(function() {
     /*module("Tree");*/
     /*test("dragging item into hidden folder maximizes", function() {*/
     /*var tree = new Tree({*/
-    /*"chidren": [*/
+    /*"sortable": true,*/
+    /*"children": [*/
+    /*new Folder({*/
+    /*"title": "Test",*/
+    /*"hidden": true,*/
+    /*"children": [*/
     /*new TreeItem({"title": "Item 1"}),*/
     /*new TreeItem({"title": "Item 2"}),*/
     /*new TreeItem({"title": "Item 3"})*/
     /*]*/
-    /*sortable: true*/
+    /*}),*/
+    /*new TreeItem({"title": "Item 4"})*/
+    /*]*/
     /*});*/
     /*var view = new TreeView({"model": tree});*/
     /*$("body").append(view.el);*/
 
-    /*var folder = new Folder({"title": "Folder 1", "hidden": true});*/
-    /*folder.add( new TreeItem({"title": "Item 1"}) );*/
-    /*folder.add( new TreeItem({"title": "Item 2"}) );*/
-    /*folder.add( new TreeItem({"title": "Item 3"}) );*/
-    /*tree.add(folder);*/
-    /*var i2 = new TreeItem({"title": "Item 4"});*/
-    /*tree.add( i2 );*/
-    /**//*debugger;*/
-    /*tree.move(i2,0);*/
-    /*view.render();*/
-    /*folder.set({"hidden": false});*/
+    /*var folder = tree.get("children").at(0);*/
+    /**//*tree.move(folder, 1)*/
+    /**//*folder.set({"hidden": false});*/
     /*});*/
 });
 
