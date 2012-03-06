@@ -33,9 +33,7 @@ $(document).ready(function() {
         equal( $(this.el).find(".tree_row.item:first input[type=checkbox]").is(":checked"), false );
     });
     test("item view select checkbox changes checked view when clicked", function() {
-        set_common_variables(this, {"title": "Item 1", "selectable": true});
-
-        $("body").append(this.el);
+        set_common_variables(this, {"title": "Item 1", "selectable": true, "selected": false});
         ok( !this.i.get("selected") );
         $(this.el).find(".tree_row.item:first input[type=checkbox]").click();
         ok( this.i.get("selected") );
