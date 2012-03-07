@@ -123,29 +123,37 @@ $(document).ready(function() {
     });
 
     module("Tree");
-    /*test("dragging item into hidden folder maximizes", function() {*/
-    /*var tree = new Tree({*/
-    /*"sortable": true,*/
-    /*"children": [*/
-    /*new Folder({*/
-    /*"title": "Test",*/
-    /*"hidden": true,*/
-    /*"children": [*/
-    /*new TreeItem({"title": "Item 1"}),*/
-    /*new TreeItem({"title": "Item 2"}),*/
-    /*new TreeItem({"title": "Item 3"})*/
-    /*]*/
-    /*}),*/
-    /*new TreeItem({"title": "Item 4"})*/
-    /*]*/
-    /*});*/
-    /*var view = new TreeView({"model": tree});*/
-    /*$("body").append(view.el);*/
-
-    /*var folder = tree.get("children").at(0);*/
-    /**//*tree.move(folder, 1)*/
-    /**//*folder.set({"hidden": false});*/
-    /*});*/
+//    test("dragging item into hidden folder maximizes", function() {
+//        var tree = new Tree({
+//            "sortable": true,
+//            "children": [
+//                new Folder({
+//                    "title": "Folder 1",
+//                    "hidden": true,
+//                    "children": [
+//                        new TreeItem({"title": "Item 1.1"}),
+//                        new TreeItem({"title": "Item 1.2"}),
+//                        new TreeItem({"title": "Item 1.3"})
+//                    ]
+//                }),
+//                new Folder({
+//                    "title": "Folder 2",
+//                    "hidden": true,
+//                    "children": [
+//                        new TreeItem({"title": "Item 2.1"}),
+//                        new TreeItem({"title": "Item 2.2"}),
+//                        new TreeItem({"title": "Item 2.3"})
+//                    ]
+//                }),
+//                new TreeItem({"title": "Item 4"}),
+//                new TreeItem({"title": "Item 5"})
+//            ]
+//        });
+//        var view = new TreeView({"model": tree});
+//        $("body").append(view.el);
+//
+//        var folder = tree.get("children").at(0);
+//    });
     test("tree shows empty message when empty", function() {
         var el = $("<div/>");
         var tree = new Tree();
