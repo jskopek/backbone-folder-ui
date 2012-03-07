@@ -51,7 +51,5 @@ $(document).ready(function() {
         equal(itemA.get("title"), itemB.get("title"));
         deepEqual(itemA.serialize(), itemB.serialize());
     });
-
-
 });
 

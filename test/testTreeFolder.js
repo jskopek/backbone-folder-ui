@@ -63,6 +63,17 @@ $(document).ready(function() {
         ok( f2.get("children").last() instanceof Folder );
         equal(f2.get("children").last().get("children").length, 1);
     });
+    test("deserialize to empty", function() {
+        var tree = new Tree();
+        tree.add( new TreeItem({"title": "Test 1"}) );
+        tree.add( new TreeItem({"title": "Test 2"}) );
+
+        equal( tree.get("children").length, 2 );
+        var emptyJSON = '{"hidden": false, "constructor": "folder", "children": [], "id": "", "title": ""}'
+        tree.deserialize( JSON.parse(emptyJSON) );
+        equal( tree.get("children").length, 0 );
+    });
+
     /*test("funky deserialize", function() {*/
     /*var el = $("<div></div>");*/
     /*var folder = new Tree({*/
