@@ -134,6 +134,9 @@ Folders have the following events in addition the the `TreeItem`s `change` event
 * `remove`: triggered when item is removed from folder
 * `move`: triggered when a child's position is changed in the folder
 * `save:hidden`: a special event that is triggered when the hidde indicator is clicked by a user; triggered in addition to the `change:hidden` event, which is fired if the value is changed programmatically
+* `nested:add`: triggered when new items are added to the folder or any of the folder's children
+* `nested:remove`: triggered when items are removed from the folder or any of the folder's children
+* `deserialize`: triggered after a folder has been deserialized
 
 ##Tree
 

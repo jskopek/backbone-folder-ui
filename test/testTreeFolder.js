@@ -211,6 +211,64 @@ $(document).ready(function() {
         });
     });
 
+    module("Folder events");
+    test("nested add event works", function() {
+        expect(3);
+        var f = new Folder();
+        var f2 = new Folder();
+        var i1 = new TreeItem({"title": "Item 1"});
+        var i2 = new TreeItem({"title": "Item 2"});
+
+        f.bind("nested:add", function(item) { equal(item, f2); });
+        f.add( f2 );
+        f.unbind("nested:add");
+
+        f.bind("nested:add", function(item) { equal(item, i1); });
+        f2.add( i1 );
+        f.unbind("nested:add");
+
+        f.bind("nested:add", function(item) { equal(item, i2); });
+        f2.add( i2 );
+        f.unbind("nested:add");
+    });
+    test("nested remove event works", function() {
+        expect(3);
+        var f = new Folder();
+        var f2 = new Folder();
+        var i1 = new TreeItem({"title": "Item 1"});
+        var i2 = new TreeItem({"title": "Item 2"});
+        f.add( f2 );
+        f2.add( i1 );
+        f2.add( i2 );
+
+        f.bind("nested:remove", function(item) { equal(item, i1); });
+        f2.remove( i1 );
+        f.unbind("nested:remove");
+
+        f.bind("nested:remove", function(item) { equal(item, i2); });
+        f2.remove( i2 );
+        f.unbind("nested:remove");
+
+        f.bind("nested:remove", function(item) { equal(item, f2); });
+        f.remove( f2 );
+        f.unbind("nested:remove");
+    });
+    test("Add event works", function() {
+        expect(1);
+        var f = new Folder();
+        var i = new TreeItem({"title": "Item 1"});
+        f.bind("add", function(item) { equal(item, i); });
+        f.add( i );
+    });
+    test("Remove event works", function() {
+        expect(1);
+        var f = new Folder();
+        var i = new TreeItem({"title": "Item 1"});
+        f.add( i );
+        f.bind("remove", function(item) { equal(item, i); });
+        f.remove( i );
+    });
+
     module("Tree folder selection");
     test("folder selected changes children selected", function() {
         var f = new Folder(commonFolderStructure);
