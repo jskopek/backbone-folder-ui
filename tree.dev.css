@@ -48,8 +48,7 @@
 }
 .tree_row > div {
 	overflow: hidden;
-	padding-bottom: 4px;
-	padding-top: 2px;
+	padding: 2px 0;
 	
 	border-top: 1px solid #ddd;
 	position: relative;
@@ -111,25 +110,20 @@ li.folder.hidden > .folder_details em span {
 	background-position: 0px 0px;
 }
 
+/* hide drag selection in sortable trees (removes confusion) */
+.tree .sortable ::selection,
+.tree .sortable ::-moz-selection {
+    background: rgba(0,0,0,0);
+}
+.tree .sortable em {
+    cursor: move;
+}
+
+
 /* answered */
 ol > li div .answered {
 	display: none;
 }
-/* folder status */
-/*ol > li div {*/
-/*position: relative;*/
-/*padding-right: 30px;*/
-/*}*/
-/*ol > li div .status {*/
-/*position: absolute;*/
-/*top: 2px;*/
-/*right: 5px;*/
-/*display: block;*/
-/*width: 30px;*/
-/*height: 25px;*/
-/*background: red;*/
-/*text-indent: -5000px;*/
-/*}*/
 /* 
 hide children of a hidden folder, but do not hide the
 list itself - this allows us to hover over and drop items into
@@ -163,3 +157,11 @@ ol > li li li li li div { margin-left: 80px; }
 ol > li li li li li li.placeholder,
 ol > li li li li li li li.placeholder.ui-nestedSortable-error,
 ol > li li li li li li div { margin-left: 100px; }
+
+/*
+tree items that have a click callback
+*/
+em.clickable {
+	cursor: pointer;
+	color: #0544A1;
+}
