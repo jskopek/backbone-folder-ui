@@ -63,6 +63,30 @@ $(document).ready(function() {
         ok( f2.get("children").last() instanceof Folder );
         equal(f2.get("children").last().get("children").length, 1);
     });
+    /*test("funky deserialize", function() {*/
+    /*var el = $("<div></div>");*/
+    /*var folder = new Tree({*/
+    /*"sortable": true,*/
+    /*"children": [*/
+    /*new Folder({*/
+    /*"title": "Folder 1",*/
+    /*"children": [*/
+    /*new TreeItem({"title": "Item 1"})*/
+    /*]*/
+    /*}),*/
+    /*new TreeItem({"title": "Item 2"})*/
+    /*]*/
+    /*});*/
+    /*var view = new TreeView({"model": folder});*/
+    /*$(el).html(view.el);*/
+
+    /*//move Item 1 to position 1*/
+    /**//*folder.move( folder.get("children").at(0), 1 );*/
+    /**//*equal($(el).find(".folder .tree_row.item:first em").text(), "Item 2");*/
+    /**//*equal($(el).find(".folder .tree_row.item:last em").text(), "Item 1");*/
+    /*$("body").append(el);*/
+    /*});*/
+
     test("child added to folder", function() {
         var f = new Folder();
         equal( f.get('children').length, 0 );
