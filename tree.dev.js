@@ -34,6 +34,7 @@ var TreeItemView = Backbone.View.extend({
         this.model.bind("change:selectable", this.render, this);
         this.model.bind("change:selected", this.render, this);
         this.model.bind("change:title", this.render, this);
+        this.model.bind("change:visible", this.render_visible, this);
         this.render();
     },
     events: {
@@ -50,7 +51,17 @@ var TreeItemView = Backbone.View.extend({
     render: function() {
         var html = this.template( this.model.toJSON() );
         $(this.el).html(html);
+
+        this.render_visible();
+
         this.delegateEvents();
+    },
+    render_visible: function() {
+        if( this.model.get("visible") == false ) {
+            $(this.el).hide();
+        } else {
+            $(this.el).show();
+        }
     }
 });
 window.tree_constructors.views["item"] = TreeItemView;
@@ -63,6 +74,7 @@ var FolderView = Backbone.View.extend({
     initialize: function() {
         this.model.bind("change:title", this.render_details, this);
         this.model.bind("change:selected", this.render_details, this);
+        this.model.bind("change:visible", this.render_visible, this);
 
         //when folder hidden or shown, update both the items below, as well as the hide/show button in the details pane
         this.model.bind("change:hidden", this.render_items, this);
@@ -114,6 +126,14 @@ var FolderView = Backbone.View.extend({
 
         this.render_details();
         this.render_items();
+        this.render_visible();
+    },
+    render_visible: function() {
+        if( this.model.get("visible") == false ) {
+            $(this.el).hide();
+        } else {
+            $(this.el).show();
+        }
     },
     render_details: function() {
         var html = _.template(
@@ -180,6 +200,7 @@ var TreeView = FolderView.extend({
     tagName: "div",
     className: "tree",
     template: _.template("<% if( show_select_all ) { %><a href='#' class='select_all'>Select All/None</a><% } %>" +
+        "<div class='empty'></div>" +
         "<ol class='folder_items'></ol>"),
     events: {
         "click a.select_all": "toggle_select_all",
@@ -195,6 +216,10 @@ var TreeView = FolderView.extend({
 
         //set sorting and bind for property updates
         this.model.bind("change:sortable", this.set_sorting, this);
+
+        this.model.get("children").bind("add", this.render_empty_message, this);
+        this.model.get("children").bind("remove", this.render_empty_message, this);
+        this.model.get("children").bind("change:visible", this.render_empty_message, this);
     },
     render: function() {
         FolderView.prototype.render.call(this);
@@ -203,17 +228,24 @@ var TreeView = FolderView.extend({
         if( this.options.max_height ) {
             $(this.el).css("max-height", this.options.max_height + "px");
         }
+
+        this.render_empty_message();
     },
     render_items: function() {
         //do not re-render the tree while it is being dragged
         if( this.options.tree_dragging ) { return false; }
-
         FolderView.prototype.render_items.call(this);
+    },
+    render_empty_message: function() {
+        if( !this.options.empty_message ) { return false; }
 
         //if an empty message has been provided, add it
-        if( !this.model.get("children").length && this.options.empty_message ) {
-            $(this.el).children("ol.folder_items").html("<div class='empty'>" + this.options.empty_message + "</div>");
-        } 
+        var has_visible_children = this.model.get("children").detect(function(child) { return child.get("visible") != false; }) ? true : false;
+        if( has_visible_children ) {
+            $(this.el).children(".empty").hide();
+        } else {
+            $(this.el).children(".empty").html( this.options.empty_message ).show();
+        }
     },
     set_sorting: function() {
         if( !this.model.get("sortable") ) {
@@ -383,6 +415,7 @@ var Folder = Backbone.Model.extend({
         var data = _.extend({}, data);
 
         var num_items = _.max([ data["children"].length, this.get("children").length ]);
+        var items_to_remove = [];
         for( var index = 0; index < num_items; index++ ) {
             var folder_item = this.get("children").at(index);
             var serialized_item = data["children"][index];
@@ -395,8 +428,10 @@ var Folder = Backbone.Model.extend({
                 this.get("children").add(child_obj, index);
 
             //if folder item exists but no corresponding serialized item exists, remove folder item
+            //don't do this inside the loop, as it will break the index and length of the folder; instead, we
+            //add it to a list of items that will be removed after the loop is complete
             } else if( !serialized_item ) {
-                this.get("children").remove( folder_item );
+                items_to_remove.push( folder_item )
 
             //if both folder and serialized data exist at corresponding location and match ids, update that object
             } else if( folder_item.id == serialized_item.id ) {
@@ -411,6 +446,12 @@ var Folder = Backbone.Model.extend({
                 child_obj.deserialize(serialized_item);
                 this.get("children").add(child_obj, {"at": index});
             }
+        }
+
+        //now that we have finished iterating through the list of items, we can remove the
+        //folder items safely
+        for( var index in items_to_remove ) {
+            this.get("children").remove( items_to_remove[index] );
         }
 
         //delete the data so that we don't set the list's children to be a serialized array wehen we call 'set'

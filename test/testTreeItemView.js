@@ -160,15 +160,15 @@ $(document).ready(function() {
         var tree_view = new TreeView({"empty_message": "I'm Empty!", "model": tree});
         $(el).append(tree_view.el);
 
-        equal( $(el).find(".tree > .folder_items > .empty").html(), "I'm Empty!" );
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+        equal( $(el).find(".tree > .empty").html(), "I'm Empty!" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "" );
 
         var item = new TreeItem({"title": "Testing"});
         tree.add( item );
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "none" );
 
         tree.remove( item );
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "" );
     });
 
     test("tree shows empty message when items invisible", function() {
@@ -180,16 +180,16 @@ $(document).ready(function() {
         //hide item
         var item = new TreeItem({"title": "Testing"});
         tree.add( item );
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "none" );
         item.set({"visible": false});
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "" );
 
         //hide folder
         var folder = new Folder({"title": "Testing"});
         tree.add( folder );
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "none" );
         folder.set({"visible": false});
-        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+        equal( $(el).find(".tree > .empty")[0].style.display, "" );
     });
 
 });
