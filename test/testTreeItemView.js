@@ -22,7 +22,6 @@ $(document).ready(function() {
         this.i.set({ "selectable": true });
         ok( $(this.el).find(".tree_row.item:first input[type=checkbox]").length );
     });
-
     test("item view select checkbox updated when checked", function() {
         //initialize checked item
         set_common_variables(this, {"title": "Item 1", "selectable": true, "selected": true});
@@ -50,6 +49,21 @@ $(document).ready(function() {
 
         $(this.el).find(".tree_row em").click();
     });
+    test("items can be made invisible", function() {
+        var el = $("<div/>");
+        var tree = new Tree();
+        var tree_view = new TreeView({"empty_message": "I'm Empty!", "model": tree});
+        $(el).append(tree_view.el);
+
+        var item = new TreeItem({"title": "Item 1"});
+        tree.add( item );
+
+        equal( $(el).find(".tree_row.item")[0].style.display, "" );
+        item.set({"visible": false});
+        equal( $(el).find(".tree_row.item")[0].style.display, "none" );
+        item.set({"visible": true});
+        equal( $(el).find(".tree_row.item")[0].style.display, "" );
+    });
 
     module("Tree Folders");
     test("children are rendered in folder when they are initialized", function() {
@@ -67,6 +81,21 @@ $(document).ready(function() {
         equal($(el).find(".folder .tree_row.item:last em").text(), "Item 2");
     });
 
+    test("folders can be made invisible", function() {
+        var el = $("<div/>");
+        var tree = new Tree();
+        var tree_view = new TreeView({"empty_message": "I'm Empty!", "model": tree});
+        $(el).append(tree_view.el);
+
+        var folder = new Folder({"title": "Testing", children:[new TreeItem({"title": "Item 1"})]});
+        tree.add( folder );
+
+        equal( $(el).find(".tree_row.folder")[0].style.display, "" );
+        folder.set({"visible": false});
+        equal( $(el).find(".tree_row.folder")[0].style.display, "none" );
+        folder.set({"visible": true});
+        equal( $(el).find(".tree_row.folder")[0].style.display, "" );
+    });
     test("children are rendered in folder as they are added", function() {
         var el = $("<div></div>");
         var folder = new Folder();
@@ -93,7 +122,7 @@ $(document).ready(function() {
         equal($(el).find(".folder .tree_row.item:last em").text(), "Item 1");
     });
 
-    /*module("Tree");*/
+    module("Tree");
     /*test("dragging item into hidden folder maximizes", function() {*/
     /*var tree = new Tree({*/
     /*"sortable": true,*/
@@ -117,6 +146,44 @@ $(document).ready(function() {
     /**//*tree.move(folder, 1)*/
     /**//*folder.set({"hidden": false});*/
     /*});*/
+    test("tree shows empty message when empty", function() {
+        var el = $("<div/>");
+        var tree = new Tree();
+        var tree_view = new TreeView({"empty_message": "I'm Empty!", "model": tree});
+        $(el).append(tree_view.el);
+
+        equal( $(el).find(".tree > .folder_items > .empty").html(), "I'm Empty!" );
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+
+        var item = new TreeItem({"title": "Testing"});
+        tree.add( item );
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+
+        tree.remove( item );
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+    });
+
+    test("tree shows empty message when items invisible", function() {
+        var el = $("<div/>");
+        var tree = new Tree();
+        var tree_view = new TreeView({"empty_message": "I'm Empty!", "model": tree});
+        $(el).append(tree_view.el);
+
+        //hide item
+        var item = new TreeItem({"title": "Testing"});
+        tree.add( item );
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+        item.set({"visible": false});
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+
+        //hide folder
+        var folder = new Folder({"title": "Testing"});
+        tree.add( folder );
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "none" );
+        folder.set({"visible": false});
+        equal( $(el).find(".tree > .folder_items > .empty")[0].style.display, "" );
+    });
+
 });
 
 function set_common_variables(context, item_value) {

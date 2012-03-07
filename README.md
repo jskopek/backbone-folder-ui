@@ -79,6 +79,7 @@ The TreeItem has several special properties.
 * `click`: an optional `function` callback; called when the item's title is clicked
 * `selected`: a Boolean value indicating if the item has been selected
 * `selectable`: a Boolean value indicating if the item is capable of being selected; determines if a select checkbox is rendered for the item
+* `visible`: determines if the item is shown or hidden in the tree
 
 These properties can be changed with Backbone's `get` and `set` methods (e.g. `item.get('title');` or `item.set({'title': 'Item A - modified'});`)
 
