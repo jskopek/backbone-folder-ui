@@ -126,6 +126,7 @@ The `Folder` includes all the `TreeItem`s properties, as well as the following:
 * `get_item( value, variable_name, type )`: look for an item with the `id` of `value`. The search takes place recursively thorugh nested folders. The optional `variable_name` allows us to specify an alternative property to serach values by (e.g. title). The optional `type` property lets us limit our search to items with a specific constructor (e.g. `folder`)
 * `flatten()`: returns a backbone collection of all of items in folder, including nested children
 * `selected()`: returns all selected items in folder, including nested children
+* `indexes_of(item)`: returns the indexes of each copy of an item in a folder; index search traverses children
 
 ###Events
 

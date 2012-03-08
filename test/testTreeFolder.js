@@ -328,5 +328,27 @@ $(document).ready(function() {
         ok( !f1.is_selected() );
         equal( f1.get("selected"), "mixed" );
     });
+    test("get index of item", function() {
+        var item = new TreeItem({ "title": "Item 1" });
+        var tree = new Tree({ "children": [item] });
+
+        //get index of item in tree
+        deepEqual( tree.indexes_of(item), [0] );
+
+        //add item to nested folder
+        var folder = new Folder({
+            "title": "Folder 1",
+            "children": [
+                new TreeItem({"title": "Item 2"}),
+                new Folder({"title": "Folder 2", "children": [item]})
+            ]
+        });
+        tree.add( folder );
+        deepEqual( tree.indexes_of(item), [0,4] );
+
+        //create new item, don't add to tree
+        var item2 = new TreeItem();
+        deepEqual( tree.indexes_of(item2), [] );
+    });
 });
 
