@@ -145,6 +145,8 @@ Trees share all of the properties of folders, but add two unique properties:
 
 * `sortable`: A Boolean value that determines if the tree can be reordered with drag & drop
 * `show_select_all`: A Boolean value that determines if we should show a "Select All/None" dialog in the tree view
+* `resizable`: A Boolean value that determines if the tree can be resized (required Jquery UI)
+* `max_height`: The maximum height of the element
 
 ###Sorting
 
