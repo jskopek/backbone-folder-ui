@@ -16,18 +16,17 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
  * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
-
-.tree {
+.tree > ol {
 	overflow-y: auto;
 	overflow-x: hidden;
 }
-.tree::-webkit-scrollbar {
+.tree > ol::-webkit-scrollbar {
 	cursor: pointer;
 	background-color: #AAA;
 	border-radius: 0 3px 3px 0;
 	width: 9px;
 }
-.tree::-webkit-scrollbar-thumb {
+.tree > ol::-webkit-scrollbar-thumb {
 	cursor: pointer;
 	background-color: #666;
 	border-radius: 0 3px 3px 0;
@@ -164,4 +163,23 @@ tree items that have a click callback
 em.clickable {
 	cursor: pointer;
 	color: #0544A1;
+}
+
+/* resizable element */
+.tree.resizable { 
+    position: relative;
+}
+.tree.resizable .ui-resizable-handle {
+    width: 10px;
+    height: 10px;
+
+    position: absolute;
+    left: auto;
+    right: 0px;
+    bottom: 0px;
+    z-index: 999;
+
+	background-image: url(tree_sprite.png);	
+	background-repeat: no-repeat;
+	background-position: 0 -27px;
 }
