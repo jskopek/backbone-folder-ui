@@ -1,0 +1,111 @@
+/* tree status */
+.actionmenu_button .options {
+    display: none;
+}
+.actionmenu_popup .options {
+    width: 100%;
+}
+.actionmenu_button {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+}
+.actionmenu_button.modifiable {
+	padding-right: 7px;
+	border-left: 1px solid #aaa;
+    background: right center no-repeat url(../../images/actionmenu/status_picker.png);
+}
+.actionmenu_button.modifiable:hover {
+    background-color: #cfcecd;
+}
+.actionmenu_button div.option {
+    display: inline-block;
+    width: 22px;
+    height: 100%;    
+    text-indent: -8000px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin: 0;
+}
+.actionmenu_button.modifiable,
+.actionmenu_popup .option {
+    cursor: pointer;
+}
+
+/* actionmenu */
+.actionmenu_popup {
+    position: absolute;
+    z-index: 10000;
+    background: #fdfdfd;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-box-shadow: 2px 2px 4px #aaa;
+    -moz-box-shadow: 2px 2px 4px #aaa;
+    border: 1px solid #aaa;
+    width: 300px;
+}
+.actionmenu_popup span.close {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    text-indent: -3000px;
+    width: 16px;
+    height: 16px;
+    background-image: url(../../images/actionmenu/bt_close.png);
+}
+.actionmenu_popup div.option  {
+    background-repeat: no-repeat;
+    display: block;
+    text-align: left;
+    padding: 4px 28px;
+    padding-right: 10px;
+    border-bottom: 1px solid #aaa;
+    background-position: 5px center;
+    text-decoration: none;
+    color: #000;
+}
+.actionmenu_popup div.option span {
+    font-size: 0.9em;
+    color: #787878;
+    padding-left: 4px;
+}
+.actionmenu_popup .group:first-child {
+    -webkit-border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+}
+.actionmenu_popup .group {
+    padding: 5px;
+    background: #bababa;
+    background: -webkit-gradient(linear, center top, center bottom, from(#e2e2e2), to(#bababa));
+    background: -moz-linear-gradient(top, #e2e2e2, #bababa);
+    color: #7a7a7a;
+    font-weight: normal;
+    font-family: Futura;
+}
+.actionmenu_popup div.option.current {
+    background-color: #c2daed;
+}
+.actionmenu_popup div.option:hover {
+    background-color: #cee7fb;
+}
+
+/* status icons */
+.actionmenu .option { background-image: url(../../images/actionmenu/status_inactive.png); }
+.actionmenu .option[status='visible'] { background-image: url(../../images/actionmenu/status_visible.png); }
+.actionmenu .option[status='active_visible'] { background-image: url(../../images/actionmenu/status_active_visible_7.png); }
+.actionmenu .option[status='active'] { background-image: url(../../images/actionmenu/status_active.png); }
+.actionmenu .option[status='inactive'] { background-image: url(../../images/actionmenu/status_inactive.png); }
+.actionmenu .option[status='review'] { background-image: url(../../images/actionmenu/status_reviewable.png); }
+.actionmenu .option[status='mixed'] { background-image: url(../../images/actionmenu/status_mixed.png); }
+.actionmenu .option[status='password'] { background-image: url(../../images/actionmenu/status_password.png); }
+.actionmenu .option[status='on'] { background-image: url(../../images/actionmenu/on.png); }
+.actionmenu .option[status='off'] { background-image: url(../../images/actionmenu/off.png); }
+.actionmenu .option[status='Duplicate'] { background-image: url(../../images/actionmenu/status_duplicate.png); }
+.actionmenu .option[status='Answers'] { background-image: url(../../images/actionmenu/status_answers.png); }
+.actionmenu .option[status='Preview'] { background-image: url(../../images/actionmenu/icon_item.png); }
+.actionmenu .option[status='Edit'] { background-image: url(../../images/actionmenu/status_edit.png); }
+.actionmenu .option[status='Delete'] { background-image: url(../../images/actionmenu/status_delete.png); }
+.actionmenu .option.loading { background-image: url(../../images/actionmenu/status_loading.gif) !important; }
+
+
+
